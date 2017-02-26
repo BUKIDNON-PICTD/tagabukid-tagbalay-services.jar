@@ -1,0 +1,33 @@
+<schema adapter="tagabukid_iss">
+
+	<element tablename="household_survey">
+		<field name="objid" primary="true" caption=""/>
+		<field name="business_objid" required="true" caption=""/>
+		<field name="state" required="true" caption=""/>
+		<field name="appno" required="true" caption=""/>
+		<field name="apptype" required="true" caption=""/>
+		<field name="dtfiled" required="true" caption=""/>
+		<field name="ownername" required="true" caption=""/>
+		<field name="owneraddress" required="true" caption=""/>
+		<field name="tradename" required="true" caption=""/>
+		<field name="hosueholdaddress" required="true" caption=""/>
+		<field name="txndate" required="true" caption=""/>
+		<field name="yearstarted" required="true" caption=""/>
+		<field name="appyear" required="true" caption=""/>
+		<field name="appqtr" required="true" caption=""/>
+		<field name="txnmode" required="true" caption=""/>
+		<field name="assessor_objid" required="true" caption=""/>
+		<field name="assessor_name" required="true" caption=""/>
+		<field name="assessor_title" required="true" caption=""/>
+		<field name="createdby_objid" required="true" caption=""/>
+		<field name="createdby_name" required="true" caption=""/>
+		<field name="approver_objid" required="true" caption=""/>
+		<field name="approver_name" required="true" caption=""/>
+		<field name="approver_title" required="true" caption=""/>
+		<field name="dtreleased" required="true" caption=""/>
+		<field name="remarks" required="true" caption=""/>
+		<field name="parentapplicationid" required="true" caption=""/>
+		<field name="nextbilldate" required="true" caption=""/>
+	</element>
+
+</schema>

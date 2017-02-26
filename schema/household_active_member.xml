@@ -1,0 +1,11 @@
+<schema adapter="tagabukid_iss">
+
+	<element tablename="household_active_member">
+		<field name="objid" primary="true" caption=""/>
+		<field name="household_objid" required="true" caption=""/>
+		<field name="hhmember_objid" required="true" caption=""/>
+		<field name="hhmember_name" required="true" caption=""/>
+		<field name="relation" required="true" caption=""/>
+	</element>
+
+</schema>

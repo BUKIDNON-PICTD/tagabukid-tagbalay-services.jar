@@ -1,0 +1,13 @@
+<schema adapter="tagabukid_iss">
+
+	<element tablename="household_survey_member">
+		<field name="objid" primary="true" caption=""/>
+		<field name="household_objid" required="true" caption=""/>
+		<field name="household_survey_objid" required="true" caption=""/>
+		<field name="activeyear" required="true" caption=""/>
+		<field name="household_member_objid" required="true" caption=""/>
+		<field name="hosuehold_member_name" required="true" caption=""/>
+		<field name="household_memebr_type" required="true" caption=""/>
+	</element>
+
+</schema>

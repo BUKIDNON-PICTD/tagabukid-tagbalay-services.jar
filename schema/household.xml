@@ -1,0 +1,19 @@
+<schema adapter="tagabukid_iss">
+
+	<element tablename="household">
+		<field name="objid" primary="true" prefix="HH"/>
+		<field name="state" required="true" caption=""/>
+		<field name="hh_address" required="true" caption=""/>
+		<field name="hh_address_objid" required="true" caption=""/>
+		<field name="pangulo_name" required="true" caption=""/>
+		<field name="pangulo_objid" required="true" caption=""/>
+		<field name="pangulo_address_text" required="true" caption=""/>
+		<field name="pangulo_address_objid" required="true" caption=""/>
+		<field name="dtfiled" required="true" caption=""/>
+		<field name="hid" required="true" caption=""/>
+		<field name="currentsurvey_objid" required="true" caption=""/>
+		<field name="surveycount" required="true" caption=""/>
+		<field name="surveytype" required="true" caption=""/>
+	</element>
+
+</schema>

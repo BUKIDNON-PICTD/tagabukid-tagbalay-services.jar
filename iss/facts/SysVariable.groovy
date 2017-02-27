@@ -3,7 +3,7 @@ package bpls.facts;
 public class SysVariable {
     
     String objid;
-    HHMember hhmember;
+    HouseholdMember householdmember;
     String name;
     String stringvalue;
     int intvalue;

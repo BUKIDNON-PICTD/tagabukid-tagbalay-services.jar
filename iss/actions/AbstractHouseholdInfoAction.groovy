@@ -7,19 +7,19 @@ public abstract class AbstractHouseholdInfoAction {
 	def BV;
 	String infotype;
 
-	def getInfo( def entity, def newinfos, def hhmember, def attrid, def val, def phase ) {
+	def getInfo( def entity, def newinfos, def household_member, def attrid, def val, def phase ) {
 		//check first if info already exists. test is a list
 		def test = null;
-		if( !hhmember ) {
-			test = entity.infos.findAll{ it.hhmember?.objid == null && it.attribute.objid == attrid };
+		if( !household_member ) {
+			test = entity.infos.findAll{ it.household_member?.objid == null && it.attribute.objid == attrid };
 			if(!test) {
-				test = newinfos.findAll{it.hhmember?.objid==null && it.attribute.objid == attrid };
+				test = newinfos.findAll{it.household_member?.objid==null && it.attribute.objid == attrid };
 			}	
 		}
 		else {
-			test = entity.infos.findAll{ it.hhmember?.objid!=null && it.hhmember.objid == hhmember.objid && it.attribute.objid == attrid };
+			test = entity.infos.findAll{ it.household_member?.objid!=null && it.household_member.objid == household_member.objid && it.attribute.objid == attrid };
 			if(!test) {
-				test =  newinfos.findAll{ it.hhmember?.objid!=null && it.hhmember.objid == hhmember.objid && it.attribute.objid == attrid };
+				test =  newinfos.findAll{ it.household_member?.objid!=null && it.household_member.objid == household_member.objid && it.attribute.objid == attrid };
 			}
 		}
 
@@ -34,8 +34,8 @@ public abstract class AbstractHouseholdInfoAction {
 		info.attribute.remove("state");
 		info.attribute.remove("system");
 
-		if(hhmember) {
-			info.hhmember = [objid:hhmember.objid, name:hhmember.name];
+		if(household_member) {
+			info.household_member = [objid:household_member.objid, name:household_member.name];
 		}
 
 		info.datatype = info.attribute.datatype;

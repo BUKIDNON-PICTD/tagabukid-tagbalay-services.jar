@@ -6,8 +6,8 @@
 		<field name="type" required="true" caption=""/>
 		<field name="attribute_objid" required="true" caption=""/>
 		<field name="attribute_name" required="true" caption=""/>
-		<field name="hhmember_objid" required="true" caption=""/>
-		<field name="hhmember_name" required="true" caption=""/>
+		<field name="household_member_objid" required="true" caption=""/>
+		<field name="household_member_name" required="true" caption=""/>
 		<field name="decimalvalue" required="true" caption=""/>
 		<field name="intvalue" required="true" caption=""/>
 		<field name="stringvalue" required="true" caption=""/>

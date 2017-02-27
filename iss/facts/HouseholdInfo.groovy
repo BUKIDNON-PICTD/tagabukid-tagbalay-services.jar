@@ -4,7 +4,7 @@ public class HouseholdInfo {
     
     SURveyapplication application;
     String objid;
-    HHMember hhmember;
+    HouseholdMember householdmember;
     String name;
     String stringvalue;
     int intvalue;

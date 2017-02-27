@@ -1,0 +1,42 @@
+import com.rameses.annotations.*;
+import com.rameses.functions.*;
+import com.rameses.rules.common.*;
+import housing.facts.*;
+import housing.actions.*;
+import com.rameses.services.extended.*;
+
+class TagabukidHouseholdVariableService extends ActiveCrudListService {
+
+	// @Service("RuleExecutorService")
+	// def ruleSvc;
+
+	// @ProxyMethod
+	// public def getInfos( def o ) {
+	// 	def facts = [];
+	// 	facts << new Ledger( type: o.type );
+	// 	def res = ruleSvc.execute( "subayinfo", facts, null, null );
+	// 	return res.infos;
+	// }
+
+	@ActiveDB(value='household_variable', em='tagabukid_iss')
+	def em
+
+	@ProxyMethod
+	public def getColumns( def p ) {
+		return [
+			[name:"name", caption:"Name"],
+			[name:"caption", caption:"Caption"],
+			[name:"datatype", caption:"Data Type"],
+		]
+	}
+
+	void beforeCreate(o) {
+		o.objid = o.name;
+		o.system = 0;
+	}
+	
+	void beforeUpdate(o) {
+		o.objid = o.name;
+		o.system = 0;
+	}
+}

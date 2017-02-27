@@ -3,10 +3,10 @@ import com.rameses.util.*;
 import java.rmi.server.*;
 import com.rameses.rules.common.*;
 
-import subay.facts.*;
-import subay.actions.*;
+import iss.facts.*;
+import iss.actions.*;
 
-public class TagabukidSubayDocumentInfoRuleService  {
+public class TagabukidHouseholdInfoRuleService  {
 
 	@Resource("RuleService")	
 	def ruleSvc;
@@ -17,7 +17,7 @@ public class TagabukidSubayDocumentInfoRuleService  {
 	@ActiveDB("lob")
 	def lob;
 
-	@DataContext("subaydocumentvariable")
+	@DataContext("household_variable")
 	def dv;
 
 	@Service("DateService")
@@ -31,7 +31,7 @@ public class TagabukidSubayDocumentInfoRuleService  {
 	@Env
 	def env;
 
-	String RULESET = "subaydocinfo";
+	String RULESET = "issinfo";
 
 	def comparator = { agg, oldvalue, newvalue ->
 		switch(agg) {
@@ -56,8 +56,15 @@ public class TagabukidSubayDocumentInfoRuleService  {
 	}
 
 	def buildActions(def request) {
+		// def actions = new RuleAction();
+		// actions.addCommand( "ask_document_info", new AskDocumentInfo(infotype:'info', DV:dv, request:request ));
+		// return actions;
 		def actions = new RuleAction();
-		actions.addCommand( "ask_document_info", new AskDocumentInfo(infotype:'info', DV:dv, request:request ));
+		actions.addCommand( "ask_business_info", new AskBusinessInfo( infotype:'assessment', BV:bv, request:request ));
+		actions.addCommand( "assert_business_info", new AssertBusinessInfo(request:request, BV:bv,  comparator: comparator));
+		actions.addCommand( "add_sysvar", new AddSysVar(request:request, comparator: comparator));
+		actions.addCommand( "assert_sysvars", new AssertSysVars(request:request));
+		actions.addCommand( "print_test", new PrintTest());
 		return actions;
 	}
 

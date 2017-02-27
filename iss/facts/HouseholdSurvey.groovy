@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import com.rameses.util.*;
 
-public class HouseholdApplicaiton {
+public class HouseholdSurvey {
     
     String objid;
     String orgtype;
@@ -28,22 +28,22 @@ public class HouseholdApplicaiton {
     //String officetype;
     //String barangayid;
 
-    /** Creates a new instance of HouseholdApplicaiton */
-    public HouseholdApplicaiton() {
+    /** Creates a new instance of HouseholdSurvey */
+    public HouseholdSurvey() {
     }
 
-    public HouseholdApplicaiton(int yr) {
+    public HouseholdSurvey(int yr) {
         this.appyear = appyear;
     }
      
-    public HouseholdApplicaiton( def app ) {
+    public HouseholdSurvey( def app ) {
         //correct dtfiled as date applied
         if(app.dtfiled) app.dateapplied = app.dtfiled;
 
         objid = app.objid;
         appno = app.appno;
         if(!app.appyear) 
-            throw new Exception("HouseholdApplicaiton Fact error. Please provide an app.appyear");
+            throw new Exception("HouseholdSurvey Fact error. Please provide an app.appyear");
         appyear = app.appyear;
         if(app.yearstarted) {
             this.yearstarted = app.yearstarted;

@@ -2,7 +2,7 @@ import com.rameses.annotations.*;
 import com.rameses.services.extended.*;
 import com.rameses.util.JaroWinkler;
 
-class TagabukidHHHeadVerificationService {
+class TagabukidHouseholdHeadVerificationService {
 
 	@ActiveDB(value='household', em='tagabukid_iss')
 	def em;

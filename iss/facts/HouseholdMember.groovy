@@ -1,22 +1,22 @@
 package iss.facts;
 
-public class HHMember {
+public class HouseholdMember {
     
     BPApplication application;
     String objid; 			
-    String hhmemberid;			
+    String householdmemberid;			
     String name;
     String classification;
     String attributes;
     String assessmenttype;
     
-    /** Creates a new instance of HHMember */
-    public HHMember() {
+    /** Creates a new instance of HouseholdMember */
+    public HouseholdMember() {
     }
 
-    public HHMember(def o) {
-        this.objid = o.hhmemberid;
-        this.hhmemberid = o.hhmemberid;
+    public HouseholdMember(def o) {
+        this.objid = o.householdmemberid;
+        this.householdmemberid = o.householdmemberid;
         this.assessmenttype = o.assessmenttype;  
     }
 
@@ -24,7 +24,7 @@ public class HHMember {
         /*print lob*/
         println "Member Fact"
         println "objid " + this.objid;
-        println "hhmemberid " + this.hhmemberid;
+        println "householdmemberid " + this.householdmemberid;
         println "assessment type " + this.assessmenttype;  
     }
 

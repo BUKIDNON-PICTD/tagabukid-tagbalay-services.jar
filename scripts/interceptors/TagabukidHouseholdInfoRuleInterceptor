@@ -1,0 +1,81 @@
+import com.rameses.annotations.*;
+import com.rameses.util.*;
+import java.rmi.server.*;
+import com.rameses.services.extended.*;
+import iss.facts.*;
+import iss.util.*;
+import com.rameses.rules.common.*;
+
+public class TagabukidHouseholdInfoRuleInterceptor {
+
+	@Env
+	def env;
+
+	// @Service("BusinessolicationFactBuilder")
+	// def factBuilder;
+
+	@Service("NumberService")
+	def numberSvc;
+
+	@Service("DateService")
+	def dateSvc;
+
+	@ActiveDB(value='household')
+	def em
+
+	@Before(pattern="(TagabukidHouseholdInfoRuleService).execute")
+	public void buildHouseholdInfoFacts(def evt) { 
+		def o = evt.args[0];
+		if(!o.members)
+			throw new Exception("Please provide at least one household member");
+		def facts = [];
+		// def currDate = dateSvc.getServerDate();
+		// def dt = currDate;
+		// if(o.dtfiled && !(o.dtfiled instanceof java.util.Date)) {
+		// 	dt = dateSvc.parse('yyyy-MM-dd', o.dtfiled );
+		// }
+		// facts << new EffectiveDate( dt );
+		// facts << new CurrentDate(currDate);
+
+		//this is so we will not process derived infos.	
+		o.infos?.removeAll( o.infos.findAll{it.phase==null || it.phase > 1} );	
+		
+		def hhmMap = [:];
+		def hhsurvey = new HouseholdSurvey(o);
+		facts << hhsurvey;
+		if( o.household?.address ) {
+			facts << new HouseholdLocation( o.household.address );
+		}	
+		if(o.members!=null) {
+			o.members?.each {
+				//we need to retrieve HHM to be absolutely sure.
+				// def hhmInfo = em.findMember( [objid: it.hhmid ]);
+				def HHM = new HHM(it);
+				// HHM.name = it.member.name;
+
+				// HHM.name = hhmInfo.name;
+				// HHM.classification = hhmInfo.classification?.objid;
+				// HHM.attributes = "-" + em.getAttributes( [hhmid: it.hhmid ] )*.name.join("-") + "-";
+				facts << HHM;
+				hhmMap.put( it.hhmid, HHM );
+			}
+		}
+		if(o.infos!=null ) {
+			o.infos?.each {
+				def dtype = it.attribute.datatype;
+				def f = new HouseholdInfo(dtype, it.value);
+				f.objid = it.objid;
+				f.name = it.attribute.name;
+				if(it.HHM) f.HHM = hhmMap[ it.HHM.objid ];
+				facts << f;
+			}
+		}
+		
+		env.facts = facts;	
+
+	}
+
+
+
+
+}

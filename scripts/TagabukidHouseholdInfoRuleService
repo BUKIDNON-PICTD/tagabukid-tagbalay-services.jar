@@ -18,7 +18,7 @@ public class TagabukidHouseholdInfoRuleService  {
 	def lob;
 
 	@DataContext("household_variable")
-	def dv;
+	def hv;
 
 	@Service("DateService")
 	def dateSvc;
@@ -31,7 +31,7 @@ public class TagabukidHouseholdInfoRuleService  {
 	@Env
 	def env;
 
-	String RULESET = "issinfo";
+	String RULESET = "householdinfo";
 
 	def comparator = { agg, oldvalue, newvalue ->
 		switch(agg) {
@@ -56,12 +56,9 @@ public class TagabukidHouseholdInfoRuleService  {
 	}
 
 	def buildActions(def request) {
-		// def actions = new RuleAction();
-		// actions.addCommand( "ask_document_info", new AskDocumentInfo(infotype:'info', DV:dv, request:request ));
-		// return actions;
 		def actions = new RuleAction();
-		actions.addCommand( "ask_business_info", new AskBusinessInfo( infotype:'assessment', BV:bv, request:request ));
-		actions.addCommand( "assert_business_info", new AssertBusinessInfo(request:request, BV:bv,  comparator: comparator));
+		actions.addCommand( "ask_household_info", new AskHouseholdInfo( infotype:'info', HV:hv, request:request ));
+		actions.addCommand( "assert_household_info", new AssertHouseholdInfo(request:request, HV:hv,  comparator: comparator));
 		actions.addCommand( "add_sysvar", new AddSysVar(request:request, comparator: comparator));
 		actions.addCommand( "assert_sysvars", new AssertSysVars(request:request));
 		actions.addCommand( "print_test", new PrintTest());
@@ -73,9 +70,11 @@ public class TagabukidHouseholdInfoRuleService  {
 		def request = [newinfos:[],  vars:[:], entity: o, facts:env.facts ]; 
 		request.actions = buildActions( request );
 		def grps = ruleDB.getRulegroups( [ruleset: RULESET] );
-
 		int phase = 0;
+		def title = "";
 		for( g in grps ) {
+			title = g.title;
+			request.phasename = g.name;
 			request.phase = phase;
 			request.vars.clear();
 			ruleSvc.execute( RULESET, request.facts, request.actions, g.name );
@@ -83,11 +82,33 @@ public class TagabukidHouseholdInfoRuleService  {
 			if(phase <= 1 && request.newinfos) break;
 			phase++;
 		}
-		if(phase == 1) phase = 2;
+		// if(phase == 1) phase = 2;
 		
-		return [infos:request.newinfos, phase: phase];
+		return [infos:request.newinfos, phase: phase, title:title];
 		
 	}
+
+// 	@ProxyMethod
+// public def execute(def o) throws Exception {
+// 		def request = [newinfos:[], hhmMap:[:], vars:[:]]; 
+// 		request.facts = o.facts;
+// 		request.entity = o.entity;
+// 		request.actions = buildActions( request );
+// 		def grps = ruleDB.getRulegroups( [ruleset: RULESET] );
+// 		int phase = 0;
+// 		for( g in grps ) { 
+// 			request.phasename = g.name;
+// 			request.phase = phase;
+// 			request.vars.clear();
+
+// 			ruleSvc.execute( RULESET, request.facts, request.actions, g.name );
+// 			//if first phase and there is entry in newinfos break it.
+// 			if(phase <= 1 && request.newinfos) break;
+// 			phase++;
+// 		}
+
+// 		return [infos:request.newinfos, phase: phase];
+// 	}
 	
 }
 

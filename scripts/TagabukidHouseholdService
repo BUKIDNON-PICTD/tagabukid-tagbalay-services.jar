@@ -29,13 +29,12 @@ public class TagabukidHouseholdService  {
 		// if(!o.txnmode) o.txnmode = 'ONLINE';
 
 		def entity          = [:]
-		entity.objid        = "Household"+ new UID();
-		entity.documenttype = [:]
+		entity.objid        = "HH"+ new UID();
 		entity.state        = "PROCESSING"
 		entity.members      = []
 		entity.dtfiled      = dtSvc.format( 'yyyy-MM-dd', dtSvc.getServerDate());
 		entity.memberinfo   = [];
-		entity.surveyinfo   = [];
+		entity.householdinfo   = [];
 		entity.surveytype 	= "NEW";
 		entity.household 	= [:];
 		return entity

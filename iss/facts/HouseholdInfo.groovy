@@ -2,9 +2,9 @@ package iss.facts;
 
 public class HouseholdInfo {
     
-    SURveyapplication application;
+    HouseholdSurvey householdsurvey;
     String objid;
-    HouseholdMember householdmember;
+    HHM hhm;
     String name;
     String stringvalue;
     int intvalue;

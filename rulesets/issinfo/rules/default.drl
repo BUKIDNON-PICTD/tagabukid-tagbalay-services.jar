@@ -1,7 +1,0 @@
-package issinfo;
-
-import java.util.*;
-import com.rameses.rules.common.*;
-import java.math.*;
-
-global RuleAction action;

@@ -1,9 +1,9 @@
-package bpls.facts;
+package iss.facts;
 
 public class SysVariable {
     
     String objid;
-    HouseholdMember householdmember;
+    HHM hhm;
     String name;
     String stringvalue;
     int intvalue;

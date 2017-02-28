@@ -4,38 +4,38 @@ import java.rmi.server.*;
 
 public abstract class AbstractHouseholdInfoAction {
 	
-	def BV;
+	def HV;
 	String infotype;
 
-	def getInfo( def entity, def newinfos, def household_member, def attrid, def val, def phase ) {
+	def getInfo( def entity, def newinfos, def hhm, def attrid, def val, def phase ) {
 		//check first if info already exists. test is a list
 		def test = null;
-		if( !household_member ) {
-			test = entity.infos.findAll{ it.household_member?.objid == null && it.attribute.objid == attrid };
+		if( !hhm ) {
+			test = entity.infos.findAll{ it.hhm?.objid == null && it.attribute.objid == attrid };
 			if(!test) {
-				test = newinfos.findAll{it.household_member?.objid==null && it.attribute.objid == attrid };
+				test = newinfos.findAll{it.hhm?.objid==null && it.attribute.objid == attrid };
 			}	
 		}
 		else {
-			test = entity.infos.findAll{ it.household_member?.objid!=null && it.household_member.objid == household_member.objid && it.attribute.objid == attrid };
+			test = entity.infos.findAll{ it.hhm?.objid!=null && it.hhm.objid == hhm.objid && it.attribute.objid == attrid };
 			if(!test) {
-				test =  newinfos.findAll{ it.household_member?.objid!=null && it.household_member.objid == household_member.objid && it.attribute.objid == attrid };
+				test =  newinfos.findAll{ it.hhm?.objid!=null && it.hhm.objid == hhm.objid && it.attribute.objid == attrid };
 			}
 		}
 
 		if(test) return null;
 			
-		def info = [objid:"BPINFO"+new UID()];
+		def info = [objid:"HHINFO"+new UID()];
 		info.phase = phase;
 		info.infotype = infotype;
-		info.attribute = BV.read( [objid: attrid ] );
+		info.attribute = HV.read( [objid: attrid ] );
 		//remove desc, state and system.
 		info.attribute.remove("description");
 		info.attribute.remove("state");
 		info.attribute.remove("system");
-
-		if(household_member) {
-			info.household_member = [objid:household_member.objid, name:household_member.name];
+		
+		if(hhm) {
+			info.hhm = [objid:hhm.objid, name:hhm.name];
 		}
 
 		info.datatype = info.attribute.datatype;

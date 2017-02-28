@@ -9,12 +9,12 @@ public class AskHouseholdInfo extends AbstractHouseholdInfoAction implements Rul
 
 	public void execute(def params, def drools) {
 	
-		def household_member = params.household_member;
+		def hhm = params.hhm;
 		def attrid = params.attribute.key;
 		def defvalue = params.defaultvalue;
 		def entity = request.entity;
 		def newinfos = request.newinfos;
-		def info = getInfo( entity, newinfos, household_member, attrid, null, request.phase );
+		def info = getInfo( entity, newinfos, hhm, attrid, null, request.phase );
 		if(info) info.defaultvalue = defvalue;
 	}
 

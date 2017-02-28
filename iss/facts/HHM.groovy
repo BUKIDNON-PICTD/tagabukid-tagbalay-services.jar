@@ -10,8 +10,8 @@ public class HHM {
     			
     // String name;
     // String relation;
-    // String classification;
-    // String attributes;
+    String classification;
+    String attributes;
     // String assessmenttype;
     
     /** Creates a new instance of HHM */
@@ -21,6 +21,8 @@ public class HHM {
     public HHM(def o) {
         this.objid = o.hhmid;
         this.hhmid = o.hhmid;
+        this.name = o.name;
+        this.relation = o.relation;
         // this.assessmenttype = o.assessmenttype;  
     }
 

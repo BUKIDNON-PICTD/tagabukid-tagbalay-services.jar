@@ -10,8 +10,8 @@ public class HHM {
     			
     // String name;
     // String relation;
-    String classification;
-    String attributes;
+    // String classification;
+    // String attributes;
     // String assessmenttype;
     
     /** Creates a new instance of HHM */

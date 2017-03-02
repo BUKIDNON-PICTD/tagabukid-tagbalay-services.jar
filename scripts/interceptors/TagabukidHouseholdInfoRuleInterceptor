@@ -60,13 +60,14 @@ public class TagabukidHouseholdInfoRuleInterceptor {
 				hhmMap.put( it.hhmid, HHM );
 			}
 		}
+		println o.infos
 		if(o.infos!=null ) {
 			o.infos?.each {
 				def dtype = it.attribute.datatype;
 				def f = new HouseholdInfo(dtype, it.value);
 				f.objid = it.objid;
 				f.name = it.attribute.name;
-				if(it.HHM) f.HHM = hhmMap[ it.HHM.objid ];
+				if(it.hhm) f.hhm = hhmMap[ it.hhm.objid ];
 				facts << f;
 			}
 		}

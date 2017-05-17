@@ -2,8 +2,8 @@ import com.rameses.annotations.*;
 import com.rameses.util.*;
 import java.rmi.server.*;
 import com.rameses.services.extended.*;
-import iss.facts.*;
-import iss.util.*;
+import tagbalay.facts.*;
+import tagbalay.util.*;
 import com.rameses.rules.common.*;
 
 public class TagabukidHouseholdInfoRuleInterceptor {
@@ -41,7 +41,7 @@ public class TagabukidHouseholdInfoRuleInterceptor {
 		o.infos?.removeAll( o.infos.findAll{it.phase==null || it.phase > 1} );	
 		
 		def hhmMap = [:];
-		def hhsurvey = new HouseholdSurvey(o);
+		def hhsurvey = new Household(o);
 		facts << hhsurvey;
 		if( o.household?.address ) {
 			facts << new HouseholdLocation( o.household.address );

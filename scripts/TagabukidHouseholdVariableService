@@ -1,8 +1,8 @@
 import com.rameses.annotations.*;
 import com.rameses.functions.*;
 import com.rameses.rules.common.*;
-import housing.facts.*;
-import housing.actions.*;
+import tagbalay.facts.*;
+import tagbalay.actions.*;
 import com.rameses.services.extended.*;
 
 class TagabukidHouseholdVariableService extends ActiveCrudListService {
@@ -18,7 +18,7 @@ class TagabukidHouseholdVariableService extends ActiveCrudListService {
 	// 	return res.infos;
 	// }
 
-	@ActiveDB(value='household_variable', em='tagabukid_iss')
+	@ActiveDB(value='household_variable', em='tagabukid_tagbalay')
 	def em
 
 	@ProxyMethod

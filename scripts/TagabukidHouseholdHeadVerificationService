@@ -4,7 +4,7 @@ import com.rameses.util.JaroWinkler;
 
 class TagabukidHouseholdHeadVerificationService {
 
-	@ActiveDB(value='household', em='tagabukid_iss')
+	@ActiveDB(value='household', em='tagabukid_tagbalay')
 	def em;
 
 	

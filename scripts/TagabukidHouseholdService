@@ -5,7 +5,7 @@ import com.rameses.services.extended.*;
 
 public class TagabukidHouseholdService  {
 
-	@ActiveDB(value='household', em='tagabukid_iss')
+	@ActiveDB(value='household', em='tagabukid_tagbalay')
 	def em
 
 	// @ActiveDB(value='subaydocumentinfo', em='tagabukid_subay')

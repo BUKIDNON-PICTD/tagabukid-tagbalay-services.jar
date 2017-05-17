@@ -1,7 +1,7 @@
-package iss.actions;
+package tagbalay.actions;
 
 import com.rameses.rules.common.*;
-import iss.facts.*;
+import tagbalay.facts.*;
 
 public class AskHouseholdInfo extends AbstractHouseholdInfoAction implements RuleActionHandler {
 

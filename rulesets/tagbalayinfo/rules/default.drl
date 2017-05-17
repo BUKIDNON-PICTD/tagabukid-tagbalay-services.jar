@@ -1,4 +1,4 @@
-package householdinfo;
+package tagbalayinfo;
 
 import java.util.*;
 import com.rameses.rules.common.*;

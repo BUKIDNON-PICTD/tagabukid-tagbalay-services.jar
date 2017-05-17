@@ -3,8 +3,8 @@ import com.rameses.util.*;
 import java.rmi.server.*;
 import com.rameses.rules.common.*;
 
-import iss.facts.*;
-import iss.actions.*;
+import tagbalay.facts.*;
+import tagbalay.actions.*;
 
 public class TagabukidHouseholdInfoRuleService  {
 
@@ -31,7 +31,7 @@ public class TagabukidHouseholdInfoRuleService  {
 	@Env
 	def env;
 
-	String RULESET = "householdinfo";
+	String RULESET = "tagbalayinfo";
 
 	def comparator = { agg, oldvalue, newvalue ->
 		switch(agg) {

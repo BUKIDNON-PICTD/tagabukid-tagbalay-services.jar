@@ -1,10 +1,10 @@
-package iss.facts;
+package tagbalay.facts;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import com.rameses.util.*;
 
-public class HouseholdSurvey {
+public class Household {
     
     String objid;
     // String orgtype;
@@ -28,22 +28,22 @@ public class HouseholdSurvey {
     //String officetype;
     //String barangayid;
 
-    /** Creates a new instance of HouseholdSurvey */
-    public HouseholdSurvey() {
+    /** Creates a new instance of Household */
+    public Household() {
     }
 
-    // public HouseholdSurvey(int yr) {
+    // public Household(int yr) {
     //     // this.appyear = appyear;
     // }
      
-    public HouseholdSurvey( def app ) {
+    public Household( def app ) {
         //correct dtfiled as date applied
         // if(app.dtfiled) app.dateapplied = app.dtfiled;
 
         // objid = app.objid;
         // appno = app.appno;
         // if(!app.appyear) 
-        //     throw new Exception("HouseholdSurvey Fact error. Please provide an app.appyear");
+        //     throw new Exception("Household Fact error. Please provide an app.appyear");
         // appyear = app.appyear;
         // if(app.yearstarted) {
         //     this.yearstarted = app.yearstarted;

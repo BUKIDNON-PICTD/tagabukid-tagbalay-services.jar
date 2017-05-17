@@ -1,4 +1,4 @@
-<schema adapter="tagabukid_iss">
+<schema adapter="tagabukid_tagbalay">
 	<element tablename="household_variable">
 		<field name="objid" primary="true"/>
 		<field name="state" required="true" visible="false"/>

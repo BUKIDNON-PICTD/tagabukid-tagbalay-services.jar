@@ -1,4 +1,4 @@
-<schema adapter="tagabukid_iss">
+<schema adapter="tagabukid_tagbalay">
 
 	<element tablename="household_survey_info">
 		<field name="objid" primary="true" caption=""/>

@@ -1,8 +1,8 @@
-package iss.facts;
+package tagbalay.facts;
 
 public class HouseholdInfo {
     
-    HouseholdSurvey householdsurvey;
+    Household household;
     String objid;
     HHM hhm;
     String name;

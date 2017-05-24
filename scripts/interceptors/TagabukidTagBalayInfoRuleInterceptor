@@ -1,0 +1,82 @@
+import com.rameses.annotations.*;
+import com.rameses.util.*;
+import java.rmi.server.*;
+import com.rameses.services.extended.*;
+import tagbalay.facts.*;
+import tagbalay.util.*;
+import com.rameses.rules.common.*;
+
+public class TagabukidTagBalayInfoRuleInterceptor {
+
+	@Env
+	def env;
+
+	// @Service("BusinessolicationFactBuilder")
+	// def factBuilder;
+
+	@Service("NumberService")
+	def numberSvc;
+
+	@Service("DateService")
+	def dateSvc;
+
+	@ActiveDB(value='tagbalay')
+	def em
+
+	@Before(pattern="(TagabukidTagBalayInfoRuleService).execute")
+	public void buildTagBalayInfoFacts(def evt) { 
+		def o = evt.args[0];
+		if(!o.members)
+			throw new Exception("Please provide at least one TagBalay member");
+		def facts = [];
+		// def currDate = dateSvc.getServerDate();
+		// def dt = currDate;
+		// if(o.dtfiled && !(o.dtfiled instanceof java.util.Date)) {
+		// 	dt = dateSvc.parse('yyyy-MM-dd', o.dtfiled );
+		// }
+		// facts << new EffectiveDate( dt );
+		// facts << new CurrentDate(currDate);
+
+		//this is so we will not process derived infos.	
+		o.infos?.removeAll( o.infos.findAll{it.phase==null || it.phase > 1} );	
+		
+		def hhmMap = [:];
+		def hhsurvey = new TagBalay(o);
+		facts << hhsurvey;
+		if( o.tagabalay?.address ) {
+			facts << new TagBalayLocation( o.tagbalay.address );
+		}	
+		if(o.members!=null) {
+			o.members?.each {
+				//we need to retrieve HHM to be absolutely sure.
+				// def hhmInfo = em.findMember( [objid: it.hhmid ]);
+				def HHM = new HHM(it);
+				// HHM.name = it.member.name;
+
+				// HHM.name = hhmInfo.name;
+				// HHM.classification = hhmInfo.classification?.objid;
+				// HHM.attributes = "-" + em.getAttributes( [hhmid: it.hhmid ] )*.name.join("-") + "-";
+				facts << HHM;
+				hhmMap.put( it.hhmid, HHM );
+			}
+		}
+	
+		if(o.infos!=null ) {
+			o.infos?.each {
+				def dtype = it.attribute.datatype;
+				def f = new TagBalayInfo(dtype, it.value);
+				f.objid = it.objid;
+				f.name = it.attribute.name;
+				if(it.hhm) f.hhm = hhmMap[ it.hhm.objid ];
+				facts << f;
+			}
+		}
+		
+		env.facts = facts;	
+
+	}
+
+
+
+
+}

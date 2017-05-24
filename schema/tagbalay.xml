@@ -1,0 +1,22 @@
+<schema adapter="tagabukid_iss">
+
+	<element tablename="tagbalay">
+		<field name="objid" primary="true" prefix="HH"/>
+		<field name="state" required="true" caption=""/>
+		<field name="tagbalay_address" required="true" caption=""/>
+		<field name="tagbalay_address_objid" required="true" caption=""/>
+		<field name="pangulo_name" required="true" caption=""/>
+		<field name="pangulo_objid" required="true" caption=""/>
+		<field name="pangulo_address_text" required="true" caption=""/>
+		<field name="pangulo_address_objid" required="true" caption=""/>
+		<field name="dtfiled" required="true" caption=""/>
+		<field name="hid" required="true" caption=""/>
+		<field name="currentsurvey_objid" required="true" caption=""/>
+		<field name="surveycount" required="true" caption=""/>
+		<field name="surveytype" required="true" caption=""/>
+		<field name="recordlog_datecreated" required="true"/>
+		<field name="recordlog_createdbyuserid" required="true"/>
+		<field name="recordlog_createdbyuser" required="true"/>
+	</element>
+
+</schema>

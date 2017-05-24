@@ -1,0 +1,17 @@
+<schema adapter="tagabukid_tagbalay">
+
+	<element tablename="tagbalay_survey_task">
+		<field name="objid" primary="true" caption=""/>
+		<field name="refid" requierd="true" caption=""/>
+		<field name="parentprocessid" requierd="true" caption=""/>
+		<field name="state" requierd="true" caption=""/>
+		<field name="startdate" requierd="true" caption=""/>
+		<field name="enddate" requierd="true" caption=""/>
+		<field name="assignee_objid" requierd="true" caption=""/>
+		<field name="assignee_name" requierd="true" caption=""/>
+		<field name="actor_objid" requierd="true" caption=""/>
+		<field name="actor_name" requierd="true" caption=""/>
+		<field name="message" requierd="true" caption=""/>
+	</element>
+
+</schema>

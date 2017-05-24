@@ -1,0 +1,13 @@
+<schema adapter="tagabukid_tagbalay">
+
+	<element tablename="tagbalay_survey_member">
+		<field name="objid" primary="true" caption=""/>
+		<field name="tagbalay_objid" required="true" caption=""/>
+		<field name="tagbalay_survey_objid" required="true" caption=""/>
+		<field name="activeyear" required="true" caption=""/>
+		<field name="tagbalay_member_objid" required="true" caption=""/>
+		<field name="hosuehold_member_name" required="true" caption=""/>
+		<field name="tagbalay_memebr_type" required="true" caption=""/>
+	</element>
+
+</schema>

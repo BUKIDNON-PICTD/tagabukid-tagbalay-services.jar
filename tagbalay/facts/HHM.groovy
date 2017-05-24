@@ -2,7 +2,7 @@ package tagbalay.facts;
 
 public class HHM {
     
-    Household household;
+    TagBalay tagbalay;
     String objid; 
     String hhmid;
     String name;

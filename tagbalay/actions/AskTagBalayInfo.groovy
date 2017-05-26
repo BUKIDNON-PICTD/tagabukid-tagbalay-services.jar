@@ -9,12 +9,12 @@ public class AskTagBalayInfo extends AbstractTagBalayInfoAction implements RuleA
 
 	public void execute(def params, def drools) {
 	
-		def hhm = params.hhm;
+		def member = params.member;
 		def attrid = params.attribute.key;
 		def defvalue = params.defaultvalue;
 		def entity = request.entity;
 		def newinfos = request.newinfos;
-		def info = getInfo( entity, newinfos, hhm, attrid, null, request.phase );
+		def info = getInfo( entity, newinfos, member, attrid, null, request.phase );
 		if(info) info.defaultvalue = defvalue;
 	}
 

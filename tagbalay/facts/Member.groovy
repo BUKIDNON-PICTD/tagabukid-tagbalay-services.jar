@@ -1,10 +1,10 @@
 package tagbalay.facts;
 
-public class HHM {
+public class Member {
     
     TagBalay tagbalay;
     String objid; 
-    String hhmid;
+    String memberid;
     String name;
     String relation;			
     			
@@ -15,12 +15,12 @@ public class HHM {
     // String assessmenttype;
     
     /** Creates a new instance of HHM */
-    public HHM() {
+    public Member() {
     }
 
-    public HHM(def o) {
-        this.objid = o.hhmid;
-        this.hhmid = o.hhmid;
+    public Member(def o) {
+        this.objid = o.memberid;
+        this.memberid = o.memberid;
         this.name = o.name;
         this.relation = o.relation;
         // this.assessmenttype = o.assessmenttype;  
@@ -30,7 +30,7 @@ public class HHM {
         /*print lob*/
         println "Member Fact"
         println "objid " + this.objid;
-        println "hhmid " + this.hhmid;
+        println "memberid " + this.memberid;
         // println "assessment type " + this.assessmenttype;  
     }
 

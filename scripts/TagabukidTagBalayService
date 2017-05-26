@@ -8,6 +8,24 @@ public class TagabukidTagBalayService  {
 	@ActiveDB(value='tagbalay', em='tagabukid_tagbalay')
 	def em
 
+	@ActiveDB(value='tagbalay_survey', em='tagabukid_tagbalay')
+	def emsurvey
+
+	@ActiveDB(value='tagbalay_active_member', em='tagabukid_tagbalay')
+	def emam
+
+	@ActiveDB(value='tagbalay_survey_member', em='tagabukid_tagbalay')
+	def emsm
+
+	@ActiveDB(value='tagbalay_active_info', em='tagabukid_tagbalay')
+	def emainfo
+
+	@ActiveDB(value='tagbalay_survey_info', em='tagabukid_tagbalay')
+	def emsinfo
+
+	@ActiveDB(value='tagbalay_survey_task', em='tagabukid_tagbalay')
+	def emstask
+
 	// @ActiveDB(value='subaydocumentinfo', em='tagabukid_subay')
 	// def eminfo
 
@@ -17,8 +35,11 @@ public class TagabukidTagBalayService  {
 	@Service('DateService')
 	def dtSvc 
 
-	// @Service('TagabukidSubayTransactionService')
-	// def dtsSvc 
+	@Service("SequenceService")
+	def seqSvc;
+
+	@Service('Var')
+	def var 
 
 	@Env
 	def env;
@@ -32,10 +53,8 @@ public class TagabukidTagBalayService  {
 		entity.objid        = "HH"+ new UID();
 		// entity.state        = "PROCESSING"
 		entity.members      = []
-		entity.dtfiled      = dtSvc.format( 'yyyy-MM-dd', dtSvc.getServerDate());
 		entity.memberinfo   = [];
 		entity.tagbalayinfo   = [];
-		entity.surveycount = 1;
 		entity.surveytype 	= "NEW";
 		entity.tagbalay 	= [:];
 		entity.recordlog = [:];
@@ -52,46 +71,39 @@ public class TagabukidTagBalayService  {
 	//create new survey
 	@ProxyMethod
     public def create(def o){
-    	if(!o.hin) {o.hin = createhin(o)}
 
-    	if( !o.apptype ) {
-			throw new Exception("apptype must be provided"); 
-		} 
+    	if(!o.hin) {
+    		o.hin = createhin(o);
+    	}
+
 		if( !o.objid ) {
 			throw new Exception("app objid must be provided. Please check the interceptor providers in initNew");
 		}
 
-		// if( !o.appno ) {
-		// 	throw new Exception("appno must be provided. Please check the interceptor providers for "+o.apptype);
-		// }
-
-		// o.txndate = dateSvc.getServerDate();
-		// if(!o.dtfiled) o.dtfiled = o.txndate;
 		if(!o.state) o.state = 'INFO';
-		// if(!o.appqtr) o.appqtr = 0;
-		// o.createdby = [objid:env.USERID,name:env.FULLNAME];
-		// o.ownername = o.business.owner.name;
-		// o.owneraddress = o.business.owner?.address?.text;
-		// o.tradename = o.business.tradename;
-		// o.businessaddress = o.business.address?.text;
 
-		//new
-		//save tagbalay
-		//save active info
-		//save active member
-		//save address
-		//save survey
-		//save survey info
-		//save survey member
-		//save survey task
+		o.nextsurveydate = dtSvc.add(dtSvc.parse('yyyy-MM-dd',o.surveydate),var.next_survey_date_interval); 
+
+		o.currentsurvey = createNewSurvey(o);
 		
-		//open survey
-		//update tagbalay
-		//update active info
-		//update survey info
+		if(o.members){
+			saveActiveTagbalayMember(o);
+			saveSurveyTagbalayMember(o);
+		}
+
 		em.create(o);
+
+		if(o.tagbalayinfos){
+			saveActiveinfo(o);
+			saveSurveyinfo(o);
+		}
+
+		createNewSurveyTask(o);
+
+		
 		return o;
     }
+
 
    	public def createhin(def o) {
 		def appcode = "HIN"
@@ -102,164 +114,124 @@ public class TagabukidTagBalayService  {
 		return prefix+seqSvc.getNextFormattedSeries(prefix);
 	}
 
-    void saveinfo(o){
-    	o.docinfos.each{
-    		it.refid = o.objid;
-    		it.caption = it.attribute.caption;
-    		it.fieldid = it.attribute.objid;
-    		it.fieldtype = it.attribute.datatype;
-    		eminfo.create(it);
-    	}
-    }
-
-    public def createinittask(o){
-		def inittask = [
-			objid          : 'TSK' + new java.rmi.server.UID(),
-			refid          : o.objid,
-			parentprocessid: null,
-			lft			   : 1,
-			rgt			   : 2,
-			state          : 'idle',
-			startdate      : dtSvc.serverDate,
-			assignee_objid : env.USERID,
-			assignee_name  : env.FULLNAME,
-			assignee_title : env.JOBTITLE,
-			actor_objid    : env.USERID,
-			actor_name     : env.FULLNAME,
-			actor_title    : env.JOBTITLE,
-			message        : 'DOCUMENT WITH DIN ' + o.din + ' WAS INITIALIZED BY ' + env.FULLNAME,
+	public def createNewSurvey(def o) {
+		def initsurvey = [
+			objid          : 'SUR' + new java.rmi.server.UID(),
+			tagbalay_objid : o.objid,
+			state          : 'PROCESSING',
+			appno          : o.hin + '1C',
+			apptype        : 'NEW',
+			surveydate     : o.surveydate,
+			tagbalay       : o.tagbalay,
+			txndate        : dtSvc.serverDate,
+			txnmode        : 'ONLINE',
+			surveyor       : o.surveyor,
+			createdby_objid: env.USERID,
+			createdby_name : env.FULLNAME,
+			remarks        : o.remarks,
+			lft            : 1,
+			rgt            : 2,
 		]
 
-		def newtaskorg = [
-			taskid:inittask.objid,
-			org:o.org,
-			macaddress:env.MACADDRESS,
-		]
-
-		taskem.save(inittask)
-		taskem.save(newtaskorg,'subaydocumenttaskorg')
-
-		return inittask
+		emsurvey.create(initsurvey);
+		return initsurvey;
 	}
 
-	@ProxyMethod
-	public def verifydin(din) {
+
+	public void saveActiveTagbalayMember(def o) {
+		o.members.each{
+			def initmember = [
+				objid                : 'ATBM' + new java.rmi.server.UID(),
+				tagbalay_objid       : o.objid,
+				tagbalay_member_objid: it.objid,
+				tagbalay_member_name : it.name,
+				relation             : it.relation,
+			]
+			emam.create(initmember);
+		}
+		
+	}
+
+	public void saveSurveyTagbalayMember(def o) {
+		o.members.each{
+			def initmember = [
+				objid                :'STBM' + new java.rmi.server.UID(),
+				tagbalay_objid       : o.objid,
+				tagbalay_survey_objid: o.currentsurvey.objid,
+				tagbalay_member_objid: it.objid,
+				tagbalay_member_name : it.name,
+				relation             : it.relation,
+			]
+			emsm.create(initmember);
+		}
+	}
+
+	public void saveActiveinfo(o){
+    	if(!o.objid) throw new Exception("tagbalay id is required");
+
+		emainfo.removeActiveInfos([tagbalayid:o.objid]);
+		o.tagbalayinfos.each {
+			it.tagbalay_objid = o.objid;
+			it.type = 'activeinfo';
+			convertInfo(it);
+			emainfo.create( it );
+		}
 	
-			def prefix = (din.substring(0,5)=="71007" ? din.substring(6,15) : din.substring(0,9)) 
-			def sequence = (din.substring(0,5)=="71007" ? din.substring(15) : din.substring(9)) 
-			din = prefix + sequence
+    }
 
-			def filter = ''' d.din = $P{barcodeid} ''';
-			def doc = em.findDocumentbyBarcode([barcodeid:din,filter:filter])
-			if (doc){
-				throw new Exception("DIN :" + din + " is already referenced to a document");
-			}
-			
-			def inv = em.findDocumentInv([prefix:prefix,sequence:sequence,orgid:dtsSvc.getUserOrg(env.USERID).org.objid])
-			if(!inv){
-				throw new Exception("Invalid DIN");
-			}
-
-
-			return [din:din,inv:inv]
+    public void saveSurveyinfo(o){
+    	if(!o.objid) throw new Exception("tagbalay id is required");
 		
+		emsinfo.removeSurveyInfos([tagbalayid:o.objid,surveyid:o.currentsurvey.objid]);
+		o.tagbalayinfos.each {
+			it.tagbalay_objid = o.objid;
+			it.tagbalay_survey_objid = o.currentsurvey.objid;
+			it.type = 'surveyinfo';
+			convertInfo(it);
+			emsinfo.create( it );
+		}
+		
+    }
+
+
+
+    private void convertInfo(o) {
+		def value = o.value;
+		if( value == null ) return;
+		switch(o.attribute.datatype) {
+			case "decimal":
+				o.decimalvalue = Double.parseDouble(value+"");
+				break;
+			case "integer":
+				o.intvalue = Integer.parseInt(value+"");
+				break;
+			case "string_array":	
+			case "string":
+				o.stringvalue = (String)value;
+				break;
+			case "boolean":
+				value = ( value == 1 || value == true ) ? "true" : "false";
+				boolean b =  Boolean.parseBoolean(value);
+				o.boolvalue = (b) ? 1 : 0; 
+				break;
+		} 
 	}
 
-	public def createchildtask(doc,o){
-    		if (o.state != 'attached'){
-    			closechildtask(o);
-    		}
-    		addChild(o)
-			o.newlft = o.lft + 1
-			o.newrgt = o.lft + 2
-			if (o.linked){
-				o.state = 'linked'
-				o.startdate = dtSvc.serverDate
-				o.enddate = null
-				o.message = 'Linked to document no. ' + doc.din
-			}else{
-				o.state = 'attached'
-				o.startdate = dtSvc.serverDate
-				o.enddate = dtSvc.serverDate
-				o.message = 'Attached to document no. ' + doc.din
-			}
-
-			def newtask = [
-				objid          : 'TSK' + new java.rmi.server.UID(),
-				refid          : o.refid,
-				parentprocessid: null,
-				lft			   : o.newlft,
-				rgt			   : o.newrgt,
-				state          : o.state,
-				startdate      : o.startdate,
-				enddate		   : o.enddate,
-				assignee_objid : env.USERID,
-				assignee_name  : env.FULLNAME,
-				assignee_title : env.JOBTITLE,
-				actor_objid    : env.USERID,
-				actor_name     : env.FULLNAME,
-				actor_title    : env.JOBTITLE,
-				message        : o.message,
-			]
-
-			def newtaskorg = [
-				taskid    :newtask.objid,
-				org       :doc.org,
-				macaddress:env.MACADDRESS,
-			]
-
-	    	taskem.save(newtask)
-	    	taskem.save(newtaskorg,'subaydocumenttaskorg')
-	    	return newtask.objid
-    }
-
-    void addChild(o){
-    	taskem.changeRight([myleft:o.lft,refid:o.objid])
-		taskem.changeLeft([myleft:o.lft,refid:o.objid])
-    }
-
-    void closechildtask(o){
-    	def filter = ''' AND dto.org_objid = $P{userorgid} AND dt.objid = $P{taskid} '''
-    	taskem.closePrevTask([enddate:dtSvc.serverDate,refid:o.refid,filter:filter,userorgid:dtsSvc.getUserOrg(env.USERID).org.objid,taskid:o.taskid]);
-    }
-
-
-    @ProxyMethod
-    public def open(o){
-    	
-    	if (o.taskid){
-    		o.filter = ''' dt.objid = $P{taskid} ''';
-    	}else if(o.barcodeid){
-    		o.filter = ''' d.din = $P{barcodeid} ''';
-    	}else{
-    		def doc = em.finddocumenttaskid([objid:o.objid]);
-    		o.taskid = doc.objid;
-    		o.filter = ''' dt.objid = $P{taskid} ''';
-    	}
-
-    	o = em.findDocumentbyBarcode(o);
-
-    	//def documenttype = emdoctype.findById([objid:o.documenttypeid])
-    	
-    	if(o.documenttype.haschild){
-    		o.filter = ''' dl.objid = $P{objid} ''';
-    		o.child = [];
-    		o.child = em.getDocumentChild(o);
-    	}
-    	// o.documenttype = emdoctype.findById([objid:o.documenttypeid])
-    	o.currentuser = env.USERID;
-    	o.currentorg = dtsSvc.getUserOrg(env.USERID).org.objid;
-    	o.infos = eminfo.getinfo([refid:o.objid]);
-		return o;
-		
-    }
-
-    @ProxyMethod
-    public def lookupNode(params){
-		def childtask = taskem.getChildTask([refid:params.refid,taskid:params.taskid])
-		params.searchtext = '%'
-		params.filter =  "AND dt.objid IN ('" + childtask.taskid.join("','") + "')";
-		return em.getList(params)
-
-    }
+	public void createNewSurveyTask(def o) {
+		def initsurveytask = [
+			objid: 'ST' + new java.rmi.server.UID(), 
+			refid: o.objid, 
+			state: 'INIT', 
+			startdate: dtSvc.serverDate, 
+			assignee_objid: env.USERID, 
+			assignee_name: env.FULLNAME, 
+			actor_objid: env.USERID, 
+			actor_name: env.FULLNAME, 
+			message: 'INITIALIZED SURVEY', 
+			lft: 1, 
+			rgt: 2, 
+		]
+		emstask.create(initsurveytask);
+	}
+ 
 }

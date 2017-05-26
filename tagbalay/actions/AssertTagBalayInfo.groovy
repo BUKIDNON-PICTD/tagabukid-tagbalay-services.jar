@@ -9,19 +9,19 @@ public class AssertTagBalayInfo extends AbstractTagBalayInfoAction implements Ru
 	def comparator;
 
 	public void execute(def params, def drools) {
-		def hhm = params.hhm;
+		def member = params.member;
 		def attrid = params.attribute.key;
 		def val = params.value;
 		def facts = request.facts;
 
 		//check if fact already exists
-		def info = getInfo( request.entity, request.newinfos, hhm, attrid, val, request.phase );
+		def info = getInfo( request.entity, request.newinfos, member, attrid, val, request.phase );
 		if(info!=null) {
 			def dtype = info.attribute.datatype;
 			def f = new TagBalayInfo(dtype, info.value);
 			f.objid = info.objid;
 			f.name = info.attribute.name;
-			f.hhm = hhm;
+			f.member = member;
 			facts << f;
 		}
 	}

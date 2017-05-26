@@ -4,7 +4,7 @@ public class TagBalayInfo {
     
     TagBalay tagbalay;
     String objid;
-    HHM hhm;
+    Member member;
     String name;
     String stringvalue;
     int intvalue;

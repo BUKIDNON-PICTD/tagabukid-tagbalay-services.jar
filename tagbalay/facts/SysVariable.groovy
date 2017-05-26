@@ -3,7 +3,7 @@ package tagbalay.facts;
 public class SysVariable {
     
     String objid;
-    HHM hhm;
+    Member member;
     String name;
     String stringvalue;
     int intvalue;

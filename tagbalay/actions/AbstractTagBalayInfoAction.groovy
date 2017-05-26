@@ -7,19 +7,19 @@ public abstract class AbstractTagBalayInfoAction {
 	def HV;
 	String infotype;
 
-	def getInfo( def entity, def newinfos, def hhm, def attrid, def val, def phase ) {
+	def getInfo( def entity, def newinfos, def member, def attrid, def val, def phase ) {
 		//check first if info already exists. test is a list
 		def test = null;
-		if( !hhm ) {
-			test = entity.infos.findAll{ it.hhm?.objid == null && it.attribute.objid == attrid };
+		if( !member ) {
+			test = entity.infos.findAll{ it.member?.objid == null && it.attribute.objid == attrid };
 			if(!test) {
-				test = newinfos.findAll{it.hhm?.objid==null && it.attribute.objid == attrid };
+				test = newinfos.findAll{it.member?.objid==null && it.attribute.objid == attrid };
 			}	
 		}
 		else {
-			test = entity.infos.findAll{ it.hhm?.objid!=null && it.hhm.objid == hhm.objid && it.attribute.objid == attrid };
+			test = entity.infos.findAll{ it.member?.objid!=null && it.member.objid == member.objid && it.attribute.objid == attrid };
 			if(!test) {
-				test =  newinfos.findAll{ it.hhm?.objid!=null && it.hhm.objid == hhm.objid && it.attribute.objid == attrid };
+				test =  newinfos.findAll{ it.member?.objid!=null && it.member.objid == member.objid && it.attribute.objid == attrid };
 			}
 		}
 
@@ -34,8 +34,8 @@ public abstract class AbstractTagBalayInfoAction {
 		info.attribute.remove("state");
 		info.attribute.remove("system");
 		
-		if(hhm) {
-			info.hhm = [objid:hhm.objid, name:hhm.name];
+		if(member) {
+			info.member = [objid:member.objid, name:member.name];
 		}
 
 		info.datatype = info.attribute.datatype;

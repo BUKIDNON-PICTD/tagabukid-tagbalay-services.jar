@@ -57,7 +57,7 @@ public class TagabukidTagBalayInfoRuleService  {
 
 	def buildActions(def request) {
 		def actions = new RuleAction();
-		actions.addCommand( "ask_tagbalay_info", new AskTagBalayInfo( infotype:'info', HV:hv, request:request ));
+		actions.addCommand( "ask_tagbalay_info", new AskTagBalayInfo( infotype:'tagbalayinfo', HV:hv, request:request ));
 		actions.addCommand( "assert_tagbalay_info", new AssertTagBalayInfo(request:request, HV:hv,  comparator: comparator));
 		actions.addCommand( "tagbalay_sysvar", new AddSysVar(request:request, comparator: comparator));
 		actions.addCommand( "assert_sysvars", new AssertSysVars(request:request));

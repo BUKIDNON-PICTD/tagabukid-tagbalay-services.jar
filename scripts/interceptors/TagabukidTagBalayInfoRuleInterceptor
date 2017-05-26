@@ -40,34 +40,34 @@ public class TagabukidTagBalayInfoRuleInterceptor {
 		//this is so we will not process derived infos.	
 		o.infos?.removeAll( o.infos.findAll{it.phase==null || it.phase > 1} );	
 		
-		def hhmMap = [:];
-		def hhsurvey = new TagBalay(o);
-		facts << hhsurvey;
+		def memberMap = [:];
+		def tagbalay = new TagBalay(o);
+		facts << tagbalay;
 		if( o.tagabalay?.address ) {
 			facts << new TagBalayLocation( o.tagbalay.address );
 		}	
 		if(o.members!=null) {
 			o.members?.each {
-				//we need to retrieve HHM to be absolutely sure.
-				// def hhmInfo = em.findMember( [objid: it.hhmid ]);
-				def HHM = new HHM(it);
-				// HHM.name = it.member.name;
+				//we need to retrieve Member to be absolutely sure.
+				// def memberInfo = em.findMember( [objid: it.memberid ]);
+				def Member = new Member(it);
+				// Member.name = it.member.name;
 
-				// HHM.name = hhmInfo.name;
-				// HHM.classification = hhmInfo.classification?.objid;
-				// HHM.attributes = "-" + em.getAttributes( [hhmid: it.hhmid ] )*.name.join("-") + "-";
-				facts << HHM;
-				hhmMap.put( it.hhmid, HHM );
+				// Member.name = memberInfo.name;
+				// Member.classification = memberInfo.classification?.objid;
+				// Member.attributes = "-" + em.getAttributes( [memberid: it.memberid ] )*.name.join("-") + "-";
+				facts << Member;
+				memberMap.put( it.memberid, Member );
 			}
 		}
-	
+		
 		if(o.infos!=null ) {
 			o.infos?.each {
 				def dtype = it.attribute.datatype;
 				def f = new TagBalayInfo(dtype, it.value);
 				f.objid = it.objid;
 				f.name = it.attribute.name;
-				if(it.hhm) f.hhm = hhmMap[ it.hhm.objid ];
+				if(it.member) f.member = memberMap[ it.member.objid ];
 				facts << f;
 			}
 		}

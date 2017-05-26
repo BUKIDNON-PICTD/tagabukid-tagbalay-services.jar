@@ -4,10 +4,9 @@
 		<field name="objid" primary="true" caption=""/>
 		<field name="tagbalay_objid" required="true" caption=""/>
 		<field name="tagbalay_survey_objid" required="true" caption=""/>
-		<field name="activeyear" required="true" caption=""/>
 		<field name="tagbalay_member_objid" required="true" caption=""/>
-		<field name="hosuehold_member_name" required="true" caption=""/>
-		<field name="tagbalay_memebr_type" required="true" caption=""/>
+		<field name="tagbalay_member_name" required="true" caption=""/>
+		<field name="relation" required="true" caption=""/>
 	</element>
 
 </schema>

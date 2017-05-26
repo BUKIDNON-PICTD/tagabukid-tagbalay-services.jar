@@ -6,14 +6,14 @@
 		<field name="type" required="true" caption=""/>
 		<field name="attribute_objid" required="true" caption=""/>
 		<field name="attribute_name" required="true" caption=""/>
-		<field name="tagbalay_member_objid" required="true" caption=""/>
-		<field name="tagbalay_member_name" required="true" caption=""/>
-		<field name="decimalvalue" required="true" caption=""/>
-		<field name="intvalue" required="true" caption=""/>
-		<field name="stringvalue" required="true" caption=""/>
-		<field name="boolvalue" required="true" caption=""/>
-		<field name="phase" required="true" caption=""/>
-		<field name="level" required="true" caption=""/>
+		<field name="member_objid" required="true" caption=""/>
+		<field name="member_name" required="true" caption=""/>
+		<field name="decimalvalue" caption=""/>
+		<field name="intvalue" caption=""/>
+		<field name="stringvalue" caption=""/>
+		<field name="boolvalue" caption=""/>
+		<field name="phase" caption=""/>
+		<field name="level" caption=""/>
 	</element>
 
 </schema>

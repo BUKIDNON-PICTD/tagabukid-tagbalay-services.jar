@@ -11,6 +11,9 @@ public class TagabukidTagBalayService  {
 	@ActiveDB(value='tagbalay_survey', em='tagabukid_tagbalay')
 	def emsurvey
 
+	@ActiveDB(value='tagbalay_address', em='tagabukid_tagbalay')
+	def emaddress
+
 	@ActiveDB(value='tagbalay_active_member', em='tagabukid_tagbalay')
 	def emam
 
@@ -92,6 +95,7 @@ public class TagabukidTagBalayService  {
 		}
 
 		em.create(o);
+		emaddress.create(o.tagabalay.address);
 
 		if(o.tagbalayinfos){
 			saveActiveinfo(o);

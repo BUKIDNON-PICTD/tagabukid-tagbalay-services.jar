@@ -32,6 +32,24 @@ public class SysVariable {
                 booleanvalue = false;
             }
         } 
+        else if( datatype == "oodili") {
+            String v = value.toString().toLowerCase().trim();
+            if(v == "1" || v == "true") {
+                booleanvalue = true;
+            } 
+            else {
+                booleanvalue = false;
+            }
+        } 
+        else if( datatype == "naawala") {
+            String v = value.toString().toLowerCase().trim();
+            if(v == "1" || v == "true") {
+                booleanvalue = true;
+            } 
+            else {
+                booleanvalue = false;
+            }
+        } 
         else if(datatype.startsWith("string")) {
             stringvalue = (String)value;
         }

@@ -7,8 +7,10 @@ public abstract class AbstractTagBalayInfoAction {
 	def HV;
 	String infotype;
 
-	def getInfo( def entity, def newinfos, def member, def attrid, def val, def phase ) {
+	def getInfo( def entity, def newinfos, def member, def couple, def attrid, def val, def phase ) {
+		
 		//check first if info already exists. test is a list
+		
 		def test = null;
 		if( !member ) {
 			test = entity.infos.findAll{ it.member?.objid == null && it.attribute.objid == attrid };
@@ -22,7 +24,8 @@ public abstract class AbstractTagBalayInfoAction {
 				test =  newinfos.findAll{ it.member?.objid!=null && it.member.objid == member.objid && it.attribute.objid == attrid };
 			}
 		}
-
+		// println test 
+		// println attrid
 		if(test) return null;
 			
 		def info = [objid:"HHINFO"+new UID()];
@@ -36,6 +39,10 @@ public abstract class AbstractTagBalayInfoAction {
 		
 		if(member) {
 			info.member = [objid:member.objid, name:member.name];
+		}
+
+		if(couple) {
+			info.couple = [objid:couple.objid, name:couple.name];
 		}
 
 		info.datatype = info.attribute.datatype;

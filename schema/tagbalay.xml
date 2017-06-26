@@ -4,13 +4,11 @@
 		<field name="objid" primary="true" prefix="HH"/>
 		<field name="state" required="true" caption=""/>
 		<field name="tagbalay_address_text" required="true" caption=""/>
-		<field name="tagbalay_address_objid" required="true" caption=""/>
 		<field name="tagbalay_pangulo_name" required="true" caption=""/>
 		<field name="tagbalay_pangulo_objid" required="true" caption=""/>
 		<field name="tagbalay_pangulo_address_text" required="true" caption=""/>
 		<field name="tagbalay_pangulo_address_objid" required="true" caption=""/>
 		<field name="hin" required="true" caption=""/>
-		<field name="currentsurvey_objid" required="true" caption=""/>
 		<field name="surveytype" required="true" caption=""/>
 		<field name="surveydate" required="true" caption=""/>
 		<field name="nextsurveydate" required="true" caption=""/>

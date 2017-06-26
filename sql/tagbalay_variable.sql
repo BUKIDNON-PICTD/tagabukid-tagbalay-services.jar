@@ -1,7 +1,7 @@
 [getList]
 SELECT *
 FROM tagbalay_variable
-WHERE name LIKE $P{searchtext}
+WHERE name LIKE $P{searchtext} OR caption LIKE $P{searchtext}
 ORDER BY system DESC, sortorder ASC, objid ASC
 
 [approve]
@@ -16,12 +16,12 @@ FROM tagbalay_variable WHERE objid=$P{objid}
 [getLookup]
 SELECT *
 FROM tagbalay_variable
-WHERE name LIKE $P{searchtext}
+WHERE name LIKE $P{searchtext} OR caption LIKE $P{searchtext}
 ORDER BY system DESC, sortorder ASC, objid ASC
 
 [getLookupByType]
 SELECT *
 FROM tagbalay_variable
-WHERE name LIKE $P{searchtext}
+WHERE name LIKE $P{searchtext} OR caption LIKE $P{searchtext}
 AND datatype = $P{datatype}
 ORDER BY system DESC, sortorder ASC, objid ASC

@@ -56,6 +56,7 @@ public class TagabukidTagBalayService  {
 		entity.objid        = "HH"+ new UID();
 		// entity.state        = "PROCESSING"
 		entity.members      = []
+		entity.couples      = []
 		entity.memberinfo   = [];
 		entity.tagbalayinfo   = [];
 		entity.surveytype 	= "NEW";
@@ -74,7 +75,7 @@ public class TagabukidTagBalayService  {
 	//create new survey
 	@ProxyMethod
     public def create(def o){
-
+    	
     	if(!o.hin) {
     		o.hin = createhin(o);
     	}
@@ -86,6 +87,9 @@ public class TagabukidTagBalayService  {
 		if(!o.state) o.state = 'INFO';
 
 		o.nextsurveydate = dtSvc.add(dtSvc.parse('yyyy-MM-dd',o.surveydate),var.next_survey_date_interval); 
+		
+		em.create(o);
+		createaddress(o);
 
 		o.currentsurvey = createNewSurvey(o);
 		
@@ -93,9 +97,6 @@ public class TagabukidTagBalayService  {
 			saveActiveTagbalayMember(o);
 			saveSurveyTagbalayMember(o);
 		}
-
-		em.create(o);
-		emaddress.create(o.tagabalay.address);
 
 		if(o.tagbalayinfos){
 			saveActiveinfo(o);
@@ -108,6 +109,28 @@ public class TagabukidTagBalayService  {
 		return o;
     }
 
+    public void createaddress(def o){
+    	def address = [
+			objid         : 'TBA' + new java.rmi.server.UID(),
+			tagbalay_objid: o.objid,
+			type          : o.tagbalay.address.type,
+			addresstype   : o.tagbalay.address.type,
+			barangay_objid: o.tagbalay.address.barangay.objid,
+			barangay_name : o.tagbalay.address.barangay.name,
+			city          : o.tagbalay.address.barangay.city,
+			province      : o.tagbalay.address.barangay.province,
+			municipality  : o.tagbalay.address.barangay.municipality,
+			bldgno        : o.tagbalay.address?.bldgno, 
+			bldgname      : o.tagbalay.address?.bldgname, 
+			unitno        : o.tagbalay.address?.unitno,
+			street        : o.tagbalay.address?.street,
+			subdivision   : o.tagbalay.address?.subdivision,
+			pin           : o.tagbalay.address?.pin,
+    	]
+
+    	emaddress.create(address);
+
+    }
 
    	public def createhin(def o) {
 		def appcode = "HIN"
@@ -224,7 +247,7 @@ public class TagabukidTagBalayService  {
 	public void createNewSurveyTask(def o) {
 		def initsurveytask = [
 			objid: 'ST' + new java.rmi.server.UID(), 
-			refid: o.objid, 
+			refid: o.currentsurvey.objid, 
 			state: 'INIT', 
 			startdate: dtSvc.serverDate, 
 			assignee_objid: env.USERID, 

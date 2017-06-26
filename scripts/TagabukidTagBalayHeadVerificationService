@@ -23,12 +23,12 @@ class TagabukidTagBalayHeadVerificationService {
 		m._limit = 1000;
 		m.name = o.substring(0,numChars) + "%";
 		def list = em.getListForVerification(m);
-
+		// println list
 		int i = 0;
 		def matchList = [];
 		def tdname = o.replaceAll("\\s{1,}", "");
         for(it in list) {
-            def wt = jw.compare( tdname, it.pangulo.name.replaceAll("\\s{1,}","") );
+            def wt = jw.compare( tdname, it.name.replaceAll("\\s{1,}","") );
             if( wt  >= wtThreshold) {
                 it.weight = (int)( wt * 100)
                 matchList.add( it );

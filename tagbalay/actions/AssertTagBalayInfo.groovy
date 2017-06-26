@@ -10,18 +10,20 @@ public class AssertTagBalayInfo extends AbstractTagBalayInfoAction implements Ru
 
 	public void execute(def params, def drools) {
 		def member = params.member;
+		def couple = params.couple;
 		def attrid = params.attribute.key;
 		def val = params.value;
 		def facts = request.facts;
 
 		//check if fact already exists
-		def info = getInfo( request.entity, request.newinfos, member, attrid, val, request.phase );
+		def info = getInfo( request.entity, request.newinfos, member, couple, attrid, val, request.phase );
 		if(info!=null) {
 			def dtype = info.attribute.datatype;
 			def f = new TagBalayInfo(dtype, info.value);
 			f.objid = info.objid;
 			f.name = info.attribute.name;
 			f.member = member;
+			f.couple = couple;
 			facts << f;
 		}
 	}

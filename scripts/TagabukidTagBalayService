@@ -56,6 +56,8 @@ public class TagabukidTagBalayService  {
 		entity.objid        = "HH"+ new UID();
 		// entity.state        = "PROCESSING"
 		entity.members      = []
+		entity.membermale   = []
+		entity.memberfemale = []
 		entity.couples      = []
 		entity.memberinfo   = [];
 		entity.tagbalayinfo   = [];

@@ -10,3 +10,8 @@ FROM tagbalay
 WHERE 
 ${filter}
 ORDER BY tagbalay_pangulo_name
+
+
+[findTagbalay]
+SELECT * FROM tagbalay
+WHERE objid = $P{objid};

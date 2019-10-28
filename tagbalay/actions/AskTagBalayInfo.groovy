@@ -10,7 +10,7 @@ public class AskTagBalayInfo extends AbstractTagBalayInfoAction implements RuleA
 	public void execute(def params, def drools) {
 	
 		def member = params.member;
-		def couple = params.couple;
+		// def couple = params.couple;
 		def attrid = params.attribute.key;
 		def defvalue = params.defaultvalue;
 		def entity = request.entity;
@@ -25,7 +25,7 @@ public class AskTagBalayInfo extends AbstractTagBalayInfoAction implements RuleA
 			val = new ActionExpression( val, [:] );	
 		}
 
-		def info = getInfo( entity, newinfos, member, couple, attrid, val, request.phase );
+		def info = getInfo( entity, newinfos, member, attrid, val, request.phase );
 		if ( info ) info.defaultvalue = info.value; 
 	}
 

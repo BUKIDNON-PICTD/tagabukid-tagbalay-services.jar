@@ -1,23 +1,72 @@
 <schema adapter="tagabukid_tagbalay">
-
 	<element tablename="tagbalay">
-		<field name="objid" primary="true" prefix="HH"/>
-		<field name="state" required="true" caption=""/>
-		<field name="tagbalay_address_text" required="true" caption=""/>
-		<field name="tagbalay_pangulo_name" required="true" caption=""/>
-		<field name="tagbalay_pangulo_objid" required="true" caption=""/>
-		<field name="tagbalay_pangulo_address_text" required="true" caption=""/>
-		<field name="tagbalay_pangulo_address_objid" required="true" caption=""/>
-		<field name="hin" required="true" caption=""/>
-		<field name="surveytype" required="true" caption=""/>
-		<field name="surveydate" required="true" caption=""/>
-		<field name="nextsurveydate" required="true" caption=""/>
-		<field name="recordlog_datecreated" required="true"/>
-		<field name="recordlog_createdbyuserid" required="true"/>
-		<field name="recordlog_createdbyuser" required="true"/>
-		<field name="recordlog_dateoflastupdate" required="true"/>
-		<field name="recordlog_lastupdatedbyuserid" required="true"/>
-		<field name="recordlog_lastupdatedbyuser" required="true"/>
-	</element>
+		<field name="objid" primary="true" prefix="CT" />
+		<field name="state" caption="State" visible="false" searchable="false"/>
+		<field name="hin" required="true" caption="Household Identification No." visible="true" searchable="true"/>
+		<field name="georefno" required="false" caption="Geographic Reference No." visible="true" searchable="true"/>
+		<field name="tagbalay_objid" required="true" visible="false" caption="" searchable="true" />
+		<field name="tagbalay_name" required="true" visible="true" caption="Name" searchable="true" />
+		<field name="tagbalay_lastname" required="true" visible="true" caption="Last Name" searchable="true" />
+		<field name="tagbalay_firstname" required="true" visible="true" caption="First Name" searchable="true" />
+		<field name="tagbalay_middlename" required="true" visible="true" caption="Middle Name" searchable="true" />
+		<field name="tagbalay_birthdate" required="true" visible="false" caption="" searchable="true" />
+		<field name="tagbalay_birthplace" required="true" visible="false" caption="" searchable="true" />
+  		<field name="tagbalay_gender" required="true" visible="true" caption="Gender" searchable="true" />
+    	<field name="tagbalay_civilstatus" required="true" visible="false" caption="" searchable="true" />
+		<field name="tagbalay_citizenship" required="false" visible="false" caption="" searchable="true" />
+		<field name="tagbalay_phoneno" required="false" visible="false" caption="" searchable="true" />
+    	<field name="tagbalay_mobileno" required="false" visible="false" caption="" searchable="true" />
+    	<field name="tagbalay_email" required="false" visible="false" caption="" searchable="true" />
+		<field name="maidenname" required="false" visible="true" caption="Name" searchable="true" />
+		<field name="nameextension" required="false" visible="true" caption="Name Extension" searchable="true" />
+		<field name="prenametitle" required="false" visible="true" caption="Pre Name Title" searchable="true" />
+		<field name="postnametitle" required="false" visible="true" caption="Post Name Title" searchable="true" />
+		
 
+		<!-- <complex name="residential_address" required="true" serializer="default" />
+        <field name="residential_address_text" required="true" defaultValue="" visible="true" caption="Address" searchable="true" />
+        <complex name="permanent_address" required="true" serializer="default" />
+		<field name="permanent_address_text" required="true" defaultValue="" visible="true" caption="Address" searchable="true" />
+		<field name="residentialzipcode" required="false" visible="false" caption="" searchable="true" />
+		<field name="permanentzipcode" required="false" visible="false" caption="" searchable="true" /> -->
+
+		<field name="height" required="true" defaultValue="0" visible="false" caption="" searchable="true" />
+    	<field name="weight" required="true" defaultValue="0" visible="false" caption="" searchable="true" />
+    	<field name="bloodtype" required="false" defaultValue="" visible="false" caption="" searchable="true" />
+    	<field name="gsisid" required="false" visible="false" caption="" searchable="true" />
+    	<field name="pagibigid" required="false" visible="false" caption="" searchable="true" />
+    	<field name="philhealth" required="false" visible="false" caption="" searchable="true" />
+    	<field name="sss" required="false" visible="false" caption="" searchable="true" />
+    	<field name="tin" required="false" visible="false" caption="" searchable="true" />
+		<field name="tagbalay_type" required="true" visible="true" searchable="true" />
+		<!-- <field name="emergency_objid" visible="false" /> -->
+		<!-- <field name="emergency_name" visible="false" />
+		<field name="emergency_mobileno" visible="false" />
+		<field name="emergency_address_text" visible="false" /> -->
+		<field name="recordlog_datecreated" required="true" visible="false"/>
+		<field name="recordlog_createdbyuserid" required="true" visible="false"/>
+		<field name="recordlog_createdbyuser" required="true" visible="false"/>
+		<field name="recordlog_dateoflastupdate" visible="false"/>
+		<field name="recordlog_lastupdatedbyuserid" visible="false"/>
+		<field name="recordlog_lastupdatedbyuser" visible="false"/>
+
+	
+		<complex name="activeaddress" ref="tagbalay_active_address" jointype="one-to-many" required="false">
+			<key field="objid" target="parentid" /> 		
+		</complex>
+
+		<complex name="activemembers" ref="tagbalay_active_member" jointype="one-to-many" required="false">
+			<key field="objid" target="parentid" /> 		
+		</complex> 
+
+
+		<!-- <complex name="activeassistances" ref="asmis_tagbalay_active_assistance" jointype="one-to-many" required="false">
+			<key field="objid" target="tagbalay_objid" /> 		
+		</complex> -->
+
+		<!-- <complex name="surveys" ref="asmis_survey" jointype="one-to-many" required="false">
+			<key field="objid" target="tagbalay_objid" /> 		
+		</complex> -->
+	</element>
 </schema>
+

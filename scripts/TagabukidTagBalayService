@@ -1,39 +1,26 @@
 import com.rameses.annotations.*;
-import com.rameses.util.*;
-import java.rmi.server.*;
+import com.rameses.common.*;
 import com.rameses.services.extended.*;
 
-public class TagabukidTagBalayService  {
 
-	@ActiveDB(value='tagbalay', em='tagabukid_tagbalay')
-	def em
+class TagabukidtagbalayService
+{
+	
+	@ActiveDB(value='hrmis_pds', em='tagabukid_hrmis')
+	def em;
 
-	@ActiveDB(value='tagbalay_survey', em='tagabukid_tagbalay')
-	def emsurvey
+    // @ActiveDB(value='hrmis_pds', em='btacs')
+	// def embtacs;
+    
+    @ActiveDB(value='beneficiary_profile')
+	def emmain;
 
-	@ActiveDB(value='tagbalay_address', em='tagabukid_tagbalay')
-	def emaddress
+	@Env
+	def env;
 
-	@ActiveDB(value='tagbalay_active_member', em='tagabukid_tagbalay')
-	def emam
+    // @ActiveDB(value='USERINFO', em='btacs')
+	// def emu;
 
-	@ActiveDB(value='tagbalay_survey_member', em='tagabukid_tagbalay')
-	def emsm
-
-	@ActiveDB(value='tagbalay_active_info', em='tagabukid_tagbalay')
-	def emainfo
-
-	@ActiveDB(value='tagbalay_survey_info', em='tagabukid_tagbalay')
-	def emsinfo
-
-	@ActiveDB(value='tagbalay_survey_task', em='tagabukid_tagbalay')
-	def emstask
-
-	// @ActiveDB(value='subaydocumentinfo', em='tagabukid_subay')
-	// def eminfo
-
-	// @ActiveDB(value='subaydocumenttask', em='tagabukid_subay')
-	// def taskem
 
 	@Service('DateService')
 	def dtSvc 
@@ -41,226 +28,306 @@ public class TagabukidTagBalayService  {
 	@Service("SequenceService")
 	def seqSvc;
 
-	@Service('Var')
-	def var 
+	@Service("PersistenceService")
+    def persistenceSvc;
 
-	@Env
-	def env;
+    @Service('QueryService')
+	def querySvc
 
-	//initialize new survey
 	@ProxyMethod
-	public def initNew() {
-		// if(!o.txnmode) o.txnmode = 'ONLINE';
+	def initCreate(){
+		
+		def entity                               = [:];
+		    entity.objid                         = 'CIT' + new java.rmi.server.UID() +"-"+ dtSvc.getServerYear() +"-N"
+		    entity.state                         = "DRAFT"
+		    entity.height                        = 0
+		    entity.weight                        = 0
+		    entity.recordlog                     = [:]
+		    entity.recordlog.datecreated         = dtSvc.serverDate
+		    entity.recordlog.createdbyuserid     = (env.USERID?env.USERID: "SYSTEM")
+		    entity.recordlog.createdbyuser       = (env.FULLNAME?env.FULLNAME: "SYSTEM")
+		    entity.recordlog.dateoflastupdate    = dtSvc.serverDate
+		    entity.recordlog.lastupdatedbyuserid = (env.USERID?env.USERID: "SYSTEM")
+		    entity.recordlog.lastupdatedbyuser   = (env.FULLNAME?env.FULLNAME: "SYSTEM")
+		    entity.tagbalay                       = [:]
+		    entity.activeaddress                 = []
+		    entity.activemembers                 = []
+		    entity.activeassistances             = []
+		    entity.surveys                       = []
+		    entity.asmisinfos                    = []
+        return entity;
 
-		def entity          = [:]
-		entity.objid        = "HH"+ new UID();
-		// entity.state        = "PROCESSING"
-		entity.members      = []
-		entity.membermale   = []
-		entity.memberfemale = []
-		entity.couples      = []
-		entity.memberinfo   = [];
-		entity.tagbalayinfo   = [];
-		entity.surveytype 	= "NEW";
-		entity.tagbalay 	= [:];
-		entity.recordlog = [:];
-		entity.recordlog.datecreated = dtSvc.serverDate;
-		entity.recordlog.createdbyuserid = env.USERID;
-		entity.recordlog.createdbyuser = env.FULLNAME;
-		entity.recordlog.dateoflastupdate =  dtSvc.serverDate;
-		entity.recordlog.lastupdatedbyuserid = env.USERID;
-		entity.recordlog.lastupdatedbyuser = env.FULLNAME;
-
-		return entity
 	}
 
-	//create new survey
-	@ProxyMethod
-    public def create(def o){
-    	
-    	if(!o.hin) {
-    		o.hin = createhin(o);
-    	}
-
-		if( !o.objid ) {
-			throw new Exception("app objid must be provided. Please check the interceptor providers in initNew");
-		}
-
-		if(!o.state) o.state = 'INFO';
-
-		o.nextsurveydate = dtSvc.add(dtSvc.parse('yyyy-MM-dd',o.surveydate),var.next_survey_date_interval); 
-		
-		em.create(o);
-		createaddress(o);
-
-		o.currentsurvey = createNewSurvey(o);
-		
-		if(o.members){
-			saveActiveTagbalayMember(o);
-			saveSurveyTagbalayMember(o);
-		}
-
-		if(o.tagbalayinfos){
-			saveActiveinfo(o);
-			saveSurveyinfo(o);
-		}
-
-		createNewSurveyTask(o);
-
-		
-		return o;
+    @ProxyMethod
+    def initSurvey(o){
+        def entity                = [:]
+            entity.objid          = 'CIS' + new java.rmi.server.UID() +"-"+ dtSvc.getServerYear() +"-N"
+            entity.tagbalay        = o.tagbalay
+            entity.maidenname     = o.middlename
+            entity.nameextension  = o.nameextension
+            entity.prenametitle   = o.prenametitle
+            entity.postnametitle  = o.postnametitle
+            entity.state          = 'DRAFT'
+            entity.surveyno       = getSurveyNo(o);
+            entity.surveytype     = 'NEW'
+            entity.surveydate     = dtSvc.serverDate
+            entity.surveyor_objid = (env.USERID?env.USERID: "SYSTEM")
+            entity.surveyor_name  = (env.FULLNAME?env.FULLNAME: "SYSTEM")
+            entity.surveyor_title = (env.JOBTITLE?env.JOBTITLE: "SYSTEM")
+            entity.recordlog      = o.recordlog
+            entity.lft            = 1
+            entity.rgt            = 2
+        return entity;
     }
 
-    public void createaddress(def o){
-    	def address = [
-			objid         : 'TBA' + new java.rmi.server.UID(),
-			tagbalay_objid: o.objid,
-			type          : o.tagbalay.address.type,
-			addresstype   : o.tagbalay.address.type,
-			barangay_objid: o.tagbalay.address.barangay.objid,
-			barangay_name : o.tagbalay.address.barangay.name,
-			city          : o.tagbalay.address.barangay.city,
-			province      : o.tagbalay.address.barangay.province,
-			municipality  : o.tagbalay.address.barangay.municipality,
-			bldgno        : o.tagbalay.address?.bldgno, 
-			bldgname      : o.tagbalay.address?.bldgname, 
-			unitno        : o.tagbalay.address?.unitno,
-			street        : o.tagbalay.address?.street,
-			subdivision   : o.tagbalay.address?.subdivision,
-			pin           : o.tagbalay.address?.pin,
-    	]
+    @ProxyMethod
+	def createPDSfromEntity(){
+        def p            = [_schemaname: 'entityindividual'];
+            p.findBy     = [ 'tin':'forpds'];
+        def entityforpds = querySvc.getList( p );
+        entityforpds.each{
+            def newpds           = initCreate();
+                newpds.pdsno     = getPDSNo();
+                newpds.versionno = getVersionNo()
+            newpds.person.putAll(persistenceSvc.read([ _schemaname: 'entityindividual', objid: it.objid])) 
+            newpds.person.middlename  = (newpds.person.middlename?newpds.person.middlename:"-");
+            newpds.person.birthplace  = "?"
+            newpds.person.civilstatus = "?"
+            newpds.residential        = [address:newpds.person.address]
+            newpds.permanent          = [address:newpds.person.address]
+            newpds._schemaname        = 'hrmis_pds'
+            
+            persistenceSvc.create(newpds);
+            // println 'PDS For ' + it.name + '...Created'
+        } 
 
-    	emaddress.create(address);
+  
+    
+    }
+    // def initPersonalInfo(o){
+    //     return [
+	// 		objid       : 'PDPI' + new java.rmi.server.UID(),
+    //         versionid	: o.objid
+    //     ]
+    // }
 
+    // def initVoluntaryWork(o){
+    // 	return [
+    // 		versionid	: o.objid
+    // 	]
+    // }
+
+    // def initTraining(o){
+    // 	return [
+    // 		versionid	: o.objid
+    // 	]
+    // }
+
+
+    // def initSkill(o){
+    // 	return [
+    // 		versionid 	: o.objid
+    // 	]
+    // }
+
+
+    // def initReferences(o){
+    // 	return [
+    // 		versionid 	: o.objid
+    // 	]
+    // }
+
+    // def initGovId(o){
+    // 	return [
+    // 		versionid	: o.objid
+    // 	]
+    // }
+
+
+
+    @ProxyMethod
+    public def getHIN(o){
+		def appcode = "BUK"
+		// def yr      = dtSvc.serverYear;
+		// def mnth    = dtSvc.serverMonth;
+		// def smon    = ( mnth < 10 ) ? "0"+mnth : mnth+"";
+		def brgy    = o.tagbalay.address.barangay.objid;
+        def prefix = appcode;
+        if(brgy){
+            prefix += brgy;
+        }else{
+            prefix += '059-NL'
+        }
+		
+		return prefix+"-"+seqSvc.getNextFormattedSeries(prefix);
     }
 
-   	public def createhin(def o) {
-		def appcode = "HIN"
-		def yr      = dtSvc.serverYear;
-		def mnth    = dtSvc.serverMonth;
-		def smon    = ( mnth < 10 ) ? "0"+mnth : mnth+"";
-		def prefix  = appcode+yr+smon;
-		return prefix+seqSvc.getNextFormattedSeries(prefix);
-	}
-
-	public def createNewSurvey(def o) {
-		def initsurvey = [
-			objid          : 'SUR' + new java.rmi.server.UID(),
-			tagbalay_objid : o.objid,
-			state          : 'PROCESSING',
-			appno          : o.hin + '1C',
-			apptype        : 'NEW',
-			surveydate     : o.surveydate,
-			tagbalay       : o.tagbalay,
-			txndate        : dtSvc.serverDate,
-			txnmode        : 'ONLINE',
-			surveyor       : o.surveyor,
-			createdby_objid: env.USERID,
-			createdby_name : env.FULLNAME,
-			remarks        : o.remarks,
-			lft            : 1,
-			rgt            : 2,
-		]
-
-		emsurvey.create(initsurvey);
-		return initsurvey;
-	}
-
-
-	public void saveActiveTagbalayMember(def o) {
-		o.members.each{
-			def initmember = [
-				objid                : 'ATBM' + new java.rmi.server.UID(),
-				tagbalay_objid       : o.objid,
-				tagbalay_member_objid: it.objid,
-				tagbalay_member_name : it.name,
-				relation             : it.relation,
-			]
-			emam.create(initmember);
-		}
+    @ProxyMethod
+    public def getSurveyNo(o){
+		def appcode = "SNO"
+		// def yr      = dtSvc.serverYear;
+		// def mnth    = dtSvc.serverMonth;
+		// def smon    = ( mnth < 10 ) ? "0"+mnth : mnth+"";
+		// def brgy    = o.tagbalay.address.barangay.objid;
+        def prefix = appcode;
+        // if(brgy){
+        //     prefix += brgy;
+        // }else{
+        //     prefix += '059-NL'
+        // }
+        prefix += o.controlno
 		
+		return prefix+"-"+seqSvc.getNextFormattedSeries(prefix);
+    }
+
+    @ProxyMethod
+    public def getList( params ) {
+        beforeList(params)
+        return em.getList(params)
+    } 
+
+    @ProxyMethod
+    public def getCountry( o ) {
+        o.searchtext+='%'
+        return em.getCountry( o );
+    }
+
+    @ProxyMethod
+    public def loadQuestions( o ) {
+        return em.getQuestions();
+    }
+
+    @ProxyMethod 
+	public def formatAddress( def x, def delimiter) {
+		// println objid
+		// def municipality = emmain.findMunicipality([objid:objid])
+        if (x.barangay){
+            x.barangay = persistenceSvc.read([ _schemaname: 'barangay', objid:x.barangay.objid])
+            x.barangay.parent = persistenceSvc.read([ _schemaname: 'municipality', objid:x.barangay.parentid])
+            def txt1 = [x.unitno, x.bldgno, x.bldgname].findAll{ (it? true: false) }.join(" ").trim(); 
+            def txt2 = [x.street, x.subdivision].findAll{ (it? true: false) }.join(" ").trim(); 
+            def txt3 = [x.barangay?.name, x?.city, x.barangay.parent.name, x.province].findAll{ (it? true: false) }.join(", ").trim(); 
+            return [txt1, txt2, txt3].findAll{ (it? true: false) }.join( delimiter ).trim();
+        }
+        return x.text;
+
 	}
 
-	public void saveSurveyTagbalayMember(def o) {
-		o.members.each{
-			def initmember = [
-				objid                :'STBM' + new java.rmi.server.UID(),
-				tagbalay_objid       : o.objid,
-				tagbalay_survey_objid: o.currentsurvey.objid,
-				tagbalay_member_objid: it.objid,
-				tagbalay_member_name : it.name,
-				relation             : it.relation,
-			]
-			emsm.create(initmember);
-		}
-	}
+    //  @ProxyMethod 
+	// public def createATTUserInfo(o) {
 
-	public void saveActiveinfo(o){
-    	if(!o.objid) throw new Exception("tagbalay id is required");
+    //     // def p = [_schemaname: 'USERINFO'];
+	// 	// p.findBy = [ 'pdsdid':r.objid];
+	// 	// def userinfo =  querySvc.findFirst( p );
 
-		emainfo.removeActiveInfos([tagbalayid:o.objid]);
-		o.tagbalayinfos.each {
-			it.tagbalay_objid = o.objid;
-			it.type = 'activeinfo';
-			convertInfo(it);
-			emainfo.create( it );
-		}
+	// 	// userinfo.NAME = r.person.name
+	// 	// userinfo.GENDER = r.person.gender
 	
-    }
+	// 	// userinfo.lname =r.person.lastname
+	// 	// userinfo.fname =r.person.firstname
+	// 	// userinfo.mname =r.person.middlename
+    //     // INSERT INTO [dbo].[USERINFO]([USERID], [BADGENUMBER], [SSN], [NAME], [GENDER], [TITLE], [PAGER], [BIRTHDAY], [HIREDDAY], [STREET], [CITY], [STATE], [ZIP], [OPHONE], [FPHONE], [VERIFICATIONMETHOD], [DEFAULTDEPTID], [SECURITYFLAGS], [ATT], [INLATE], [OUTEARLY], [OVERTIME], [SEP], [HOLIDAY], [MINZU], [PASSWORD], [LUNCHDURATION], [MVerifyPass], [PHOTO], [Notes], [privilege], [InheritDeptSch], [InheritDeptSchClass], [AutoSchPlan], [MinAutoSchInterval], [RegisterOT], [InheritDeptRule], [EMPRIVILEGE], [CardNo], [Pin1], [FaceGroup], [AccGroup], [UseAccGroupTZ], [VerifyCode], [Expires], [ValidCount], [ValidTimeBegin], [ValidTimeEnd], [TimeZone1], [TimeZone2], [TimeZone3], [hrmisid], [lname], [fname], [mname], [pdsid]) VALUES (5000, '5000', NULL, 'RUFINO JOHN E. AGUILAR', 'MALE', 'CP II', NULL, '1989-08-04 00:00:00.000', NULL, 'fb27fd74-e9ec-4454-ac01-21de81a5f795', 'VALIDID', NULL, NULL, NULL, NULL, NULL, 2, 15, 1, 1, 1, 1, 1, 1, NULL, '	fDFnNz53', 1, '19178',NULL, NULL, 3, 1, 1, 1, 24, 1, 1, 0, '2141298163', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'pgb_employee19703', 'AGUILAR', 'RUFINO JOHN', 'Ecaldre', NULL);
 
-    public void saveSurveyinfo(o){
-    	if(!o.objid) throw new Exception("tagbalay id is required");
-		
-		emsinfo.removeSurveyInfos([tagbalayid:o.objid,surveyid:o.currentsurvey.objid]);
-		o.tagbalayinfos.each {
-			it.tagbalay_objid = o.objid;
-			it.tagbalay_survey_objid = o.currentsurvey.objid;
-			it.type = 'surveyinfo';
-			convertInfo(it);
-			emsinfo.create( it );
-		}
-		
-    }
+    //     // emu.sqlContext.createExecutor('''
+	// 	// 	INSERT INTO [dbo].[USERINFO](BADGENUMBER,
+    //     //     NAME,GENDER,BIRTHDAY,DEFAULTDEPTID,ATT,INLATE,OUTEARLY,OVERTIME,SEP,HOLIDAY,MINZU,LUNCHDURATION,privilege,InheritDeptSch,InheritDeptSchClass,AutoSchPlan,MinAutoSchInterval,RegisterOT,InheritDeptRule,EMPRIVILEGE,lname,fname,mname,pdsid)
+    //     //     VALUES (
+    //     //         $P{BADGENUMBER},
+    //     //         $P{NAME},
+    //     //         $P{GENDER},
+    //     //         $P{BIRTHDAY},
+    //     //         $P{DEFAULTDEPTID},
+    //     //         $P{ATT},
+    //     //         $P{INLATE},
+    //     //         $P{OUTEARLY},
+    //     //         $P{OVERTIME},
+    //     //         $P{SEP},
+    //     //         $P{HOLIDAY},
+    //     //         $P{MINZU},
+    //     //         $P{LUNCHDURATION},
+    //     //         $P{privilege},
+    //     //         $P{InheritDeptSch},
+    //     //         $P{InheritDeptSchClass},
+    //     //         $P{AutoSchPlan},
+    //     //         $P{MinAutoSchInterval},
+    //     //         $P{RegisterOT},
+    //     //         $P{InheritDeptRule},
+    //     //         $P{EMPRIVILEGE},
+    //     //         $P{lname},
+    //     //         $P{fname},
+    //     //         $P{mname},
+    //     //         $P{pdsid})
+	// 	// ''')
+    //     //     .setParameter('BADGENUMBER', new java.rmi.server.UID().toString())
+    //     //     .setParameter('NAME', o.person.name)
+    //     //     .setParameter('GENDER', o.person.gender)
+    //     //     .setParameter('BIRTHDAY', o.person.birthdate)
+    //     //     .setParameter('DEFAULTDEPTID', 1)
+    //     //     .setParameter('ATT', 1)
+    //     //     .setParameter('INLATE', 1)
+    //     //     .setParameter('OUTEARLY', 1)
+    //     //     .setParameter('OVERTIME', 1)
+    //     //     .setParameter('SEP', 1)
+    //     //     .setParameter('HOLIDAY', 1)
+    //     //     .setParameter('MINZU', 1)
+    //     //     .setParameter('LUNCHDURATION', 1)
+    //     //     .setParameter('privilege', 0)
+    //     //     .setParameter('InheritDeptSch', 1)
+    //     //     .setParameter('InheritDeptSchClass', 1)
+    //     //     .setParameter('AutoSchPlan', 1)
+    //     //     .setParameter('MinAutoSchInterval', 24)
+    //     //     .setParameter('RegisterOT', 1)
+    //     //     .setParameter('InheritDeptRule', 1)
+    //     //     .setParameter('EMPRIVILEGE', 0)
+    //     //     .setParameter('lname',  o.person.lastname)
+    //     //     .setParameter('fname',  o.person.firstname)
+    //     //     .setParameter('mname',  o.person.middlename)
+    //     //     .setParameter('pdsid', o.objid)
+	// 	//     .execute()
+	// 	def userinfo = [
+    //        USERID: embtacs.findMaxUserID().USERID,
+    //        BADGENUMBER: embtacs.findMaxUserID().USERID,
+    //        NAME : o.person.name,
+    //        GENDER : o.person.gender,
+    //        BIRTHDAY : o.person.birthdate,
+    //        DEFAULTDEPTID : 1,
+    //        ATT : 1,
+    //        INLATE : 1,
+    //        OUTEARLY : 1,
+    //        OVERTIME : 1,
+    //        SEP : 1,
+    //        HOLIDAY : 1,
+    //        MINZU : 1,
+    //        LUNCHDURATION : 1,
+    //        privilege : 0,
+    //        InheritDeptSch : 1,
+    //        InheritDeptSchClass : 1,
+    //        AutoSchPlan : 1,
+    //        MinAutoSchInterval : 24,
+    //        RegisterOT : 1,
+    //        InheritDeptRule : 1, 
+    //        EMPRIVILEGE : 0,
+    //        lname :  o.person.lastname,
+    //        fname :  o.person.firstname,
+    //        mname :  o.person.middlename,
+    //        pdsid : o.objid
+    //     ]
+    // 	embtacs.insertUser(userinfo);
+     
+	// }
 
 
-
-    private void convertInfo(o) {
-		def value = o.value;
-		if( value == null ) return;
-		switch(o.attribute.datatype) {
-			case "decimal":
-				o.decimalvalue = Double.parseDouble(value+"");
-				break;
-			case "integer":
-				o.intvalue = Integer.parseInt(value+"");
-				break;
-			case "string_array":	
-			case "string":
-				o.stringvalue = (String)value;
-				break;
-			case "boolean":
-				value = ( value == 1 || value == true ) ? "true" : "false";
-				boolean b =  Boolean.parseBoolean(value);
-				o.boolvalue = (b) ? 1 : 0; 
-				break;
-		} 
+    @ProxyMethod 
+	public def formatAddress( def x, def delimiter,def objid ) {
+		// println objid
+		def municipality = emmain.findMunicipality([objid:objid])
+		// def barangay = persistenceSvc.read([ _schemaname: 'barangay', objid:x.barnagay.objid])
+		def txt1 = [x.unitno, x.bldgno, x.bldgname].findAll{ (it? true: false) }.join(" ").trim(); 
+		def txt2 = [x.street, x.subdivision].findAll{ (it? true: false) }.join(" ").trim(); 
+		def txt3 = [x.barangay?.name, x.city, municipality.name, x.province].findAll{ (it? true: false) }.join(", ").trim(); 
+		return [txt1, txt2, txt3].findAll{ (it? true: false) }.join( delimiter ).trim();
 	}
+//    [province:"PROVINCE OF BUKIDNON",type:"local",barangay:[code:"059-15-003",oldpin:null,city:null,indexno:"003",municipality:"MANOLO FORTICH",oldindexno:null,pin:"059-15-003",province:"PROVINCE OF BUKIDNON",objid:"059-15-003",name:"ALAE",state:"DRAFT",lgutype:"barangay",parent:[name:"MANOLO FORTICH",orgclass:"MUNICIPALITY",objid:"059-15"],provcity:[name:"PROVINCE OF BUKIDNON",objid:"059",indexno:"059"],munidistrict:[objid:"059-15",name:"MANOLO FORTICH",indexno:"15"]],text:"ALAE, \nPROVINCE OF BUKIDNON"]
 
-	public void createNewSurveyTask(def o) {
-		def initsurveytask = [
-			objid: 'ST' + new java.rmi.server.UID(), 
-			refid: o.currentsurvey.objid, 
-			state: 'INIT', 
-			startdate: dtSvc.serverDate, 
-			assignee_objid: env.USERID, 
-			assignee_name: env.FULLNAME, 
-			actor_objid: env.USERID, 
-			actor_name: env.FULLNAME, 
-			message: 'INITIALIZED SURVEY', 
-			lft: 1, 
-			rgt: 2, 
-		]
-		emstask.create(initsurveytask);
-	}
- 
 }

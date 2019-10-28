@@ -3,7 +3,6 @@
 	<element tablename="tagbalay_active_info">
 		<field name="objid" primary="true" caption=""/>
 		<field name="tagbalay_objid" required="true" caption=""/>
-		<field name="assistancetype_objid" required="true" caption=""/>
 		<field name="type" required="true" caption=""/>
 		<field name="attribute_objid" required="true" caption=""/>
 		<field name="attribute_name" required="true" caption=""/>

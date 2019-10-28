@@ -7,7 +7,7 @@ public abstract class AbstractTagBalayInfoAction {
 	def HV;
 	String infotype;
 
-	def getInfo( def entity, def newinfos, def member, def couple, def attrid, def val, def phase ) {
+	def getInfo( def entity, def newinfos, def member, def attrid, def val, def phase ) {
 		
 		//check first if info already exists. test is a list
 		
@@ -41,9 +41,9 @@ public abstract class AbstractTagBalayInfoAction {
 			info.member = [objid:member.objid, name:member.name];
 		}
 
-		if(couple) {
-			info.couple = [objid:couple.objid, name:couple.name];
-		}
+		// if(couple) {
+		// 	info.couple = [objid:couple.objid, name:couple.name];
+		// }
 
 		info.datatype = info.attribute.datatype;
 		

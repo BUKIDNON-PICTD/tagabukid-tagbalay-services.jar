@@ -7,8 +7,8 @@
 		<field name="type" required="true" caption=""/>
 		<field name="attribute_objid" required="true" caption=""/>
 		<field name="attribute_name" required="true" caption=""/>
-		<field name="member_objid" required="true" caption=""/>
-		<field name="member_name" required="true" caption=""/>
+		<field name="member_objid" caption=""/>
+		<field name="member_name" caption=""/>
 		<field name="decimalvalue" caption=""/>
 		<field name="intvalue" caption=""/>
 		<field name="stringvalue" rcaption=""/>

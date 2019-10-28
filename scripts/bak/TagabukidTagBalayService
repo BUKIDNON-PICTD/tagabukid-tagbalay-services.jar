@@ -1,0 +1,388 @@
+import com.rameses.annotations.*;
+import com.rameses.util.*;
+import java.rmi.server.*;
+import com.rameses.services.extended.*;
+
+public class TagabukidTagBalayService  {
+
+	@ActiveDB(value='tagbalay', em='tagabukid_tagbalay')
+	def em
+
+	@ActiveDB(value='tagbalay_survey', em='tagabukid_tagbalay')
+	def emsurvey
+
+	@ActiveDB(value='tagbalay_address', em='tagabukid_tagbalay')
+	def emaddress
+
+	@ActiveDB(value='tagbalay_active_member', em='tagabukid_tagbalay')
+	def emam
+
+	@ActiveDB(value='tagbalay_survey_member', em='tagabukid_tagbalay')
+	def emsm
+
+	@ActiveDB(value='tagbalay_active_info', em='tagabukid_tagbalay')
+	def emainfo
+
+	@ActiveDB(value='tagbalay_survey_info', em='tagabukid_tagbalay')
+	def emsinfo
+
+	@ActiveDB(value='tagbalay_survey_task', em='tagabukid_tagbalay')
+	def emstask
+
+	@Service('PersistenceService')
+    def persistenceSvc; 
+
+	// @ActiveDB(value='subaydocumentinfo', em='tagabukid_subay')
+	// def eminfo
+
+	// @ActiveDB(value='subaydocumenttask', em='tagabukid_subay')
+	// def taskem
+
+	@Service('DateService')
+	def dtSvc 
+
+	@Service("SequenceService")
+	def seqSvc;
+
+	@Service('Var')
+	def var 
+
+	@Env
+	def env;
+
+	//initialize new survey
+	@ProxyMethod
+	public def initNew() {
+		// if(!o.txnmode) o.txnmode = 'ONLINE';
+
+		def entity          = [:]
+		entity.objid        = "HH"+ new UID();
+		// entity.state        = "PROCESSING"
+		entity.members      = []
+		entity.membermale   = []
+		entity.memberfemale = []
+		entity.couples      = []
+		entity.memberinfo   = [];
+		entity.tagbalayinfo   = [];
+		entity.surveytype 	= "NEW";
+		entity.tagbalay 	= [:];
+		entity.recordlog = [:];
+		entity.recordlog.datecreated = dtSvc.serverDate;
+		entity.recordlog.createdbyuserid = env.USERID;
+		entity.recordlog.createdbyuser = env.FULLNAME;
+		entity.recordlog.dateoflastupdate =  dtSvc.serverDate;
+		entity.recordlog.lastupdatedbyuserid = env.USERID;
+		entity.recordlog.lastupdatedbyuser = env.FULLNAME;
+
+		return entity
+	}
+
+	@ProxyMethod
+    public def open(o){
+    	
+    	o = em.read(o);
+    	o.tagbalayinfos = emainfo.getActieInfos([tagbalayid:o.objid]);
+    	o.members = emam.getTagbalayMember([objid:o.objid]);
+    	// o.members.each{
+    	// 	it << persistenceSvc.read([ _schemaname: 'entityindividual', objid: it.memberid ])
+    	// }
+    	o.survey = emsurvey.findCurrentSurvey([tagbalayid:o.objid])
+    	def address = emaddress.findTagbalayAddress([tagbalayid:o.objid])
+    	address.text = o.tagbalay.address.text
+    	o.tagbalay.address = address
+     	// println o
+    	// o.couples = em
+    	/*if (o.taskid){
+    		o.filter = ''' dt.objid = $P{taskid} ''';
+    	}else if(o.barcodeid){
+    		o.filter = ''' d.din = $P{barcodeid} ''';
+    	}else{
+    		def doc = em.finddocumenttaskid([objid:o.objid]);
+    		o.taskid = doc.objid;
+    		o.filter = ''' dt.objid = $P{taskid} ''';
+    	}
+		
+    	o = em.findDocumentbyBarcode(o);
+    	o.statemessage = createstatemessage(o);
+    	//def documenttype = emdoctype.findById([objid:o.documenttypeid])
+    	
+    	if(o.documenttype.haschild){
+    		o.filter = ''' dl.objid = $P{objid} ''';
+    		o.child = [];
+    		o.child = em.getDocumentChild(o);
+    	}
+    	// o.documenttype = emdoctype.findById([objid:o.documenttypeid])
+    	o.currentuser = env.USERID;
+    	o.currentorg = dtsSvc.getUserOrg(env.USERID).org.objid;
+    	o.docinfos = getDocumentInfos([documentid:o.objid]);*/
+    	o.tagbalayinfos.each {
+			it.value = formatInfo(it);
+		}
+
+		return o;
+		
+    }
+
+
+	private def formatInfo(x)  {
+		switch(x.attribute.datatype) {
+			case "decimal" : return x.decimalvalue; break;
+			case "integer" : return x.intvalue; break;
+			case "string_array" : return x.stringvalue; break;
+			case "string"  : return x.stringvalue; break;
+			case "boolean" : 
+				if(x.boolvalue == 0) return false;
+				if(x.boolvalue == 1) return true;
+				return x.boolvalue; 
+				break;
+		}
+	}
+
+	//create new survey
+	@ProxyMethod
+    public def create(def o){
+    	// println o
+    	// xxx
+    	if(!o.hin) {
+    		o.hin = createhin(o);
+    	}
+
+		if( !o.objid ) {
+			throw new Exception("app objid must be provided. Please check the interceptor providers in initNew");
+		}
+
+		if(!o.state) o.state = 'INFO';
+
+		o.nextsurveydate = dtSvc.add(dtSvc.parse('yyyy-MM-dd',o.surveydate),var.next_survey_date_interval); 
+		
+		em.create(o);
+		createaddress(o);
+
+		o.currentsurvey = createNewSurvey(o);
+		
+		if(o.members){
+			saveActiveTagbalayMember(o);
+			saveSurveyTagbalayMember(o);
+		}
+
+		if(o.tagbalayinfos){
+			saveActiveinfo(o);
+			saveSurveyinfo(o);
+		}
+
+		createNewSurveyTask(o);
+
+		
+		return o;
+    }
+
+    @ProxyMethod
+    public def update(def o){
+
+    	if(!o.hin) {
+    		o.hin = createhin(o);
+    	}
+
+		if( !o.objid ) {
+			throw new Exception("app objid must be provided. Please check the interceptor providers in initNew");
+		}
+
+		// if(!o.state) o.state = 'INFO';
+
+		// o.nextsurveydate = dtSvc.add(dtSvc.parse('yyyy-MM-dd',o.surveydate),var.next_survey_date_interval); 
+		o.surveyor = o.survey.surveyor
+		em.update(o);
+		emaddress.deleteAddress([tagbalayid:o.objid])
+		emstask.deleteTask([surveyid:o.survey.objid])
+		emainfo.deleteInfo([tagbalayid:o.objid])
+		emsinfo.deleteInfo([surveyid:o.survey.objid])
+		emam.deleteMember([tagbalayid:o.objid])
+		emsm.deleteMember([surveyid:o.survey.objid])
+		emsurvey.deleteSurvey([surveyid:o.survey.objid])
+
+		createaddress(o);
+		o.currentsurvey = createNewSurvey(o);
+
+		
+
+		if(o.members){
+			saveActiveTagbalayMember(o);
+			saveSurveyTagbalayMember(o);
+		}
+
+		if(o.tagbalayinfos){
+			saveActiveinfo(o);
+			saveSurveyinfo(o);
+		}
+
+		createNewSurveyTask(o);
+
+		
+		return o;
+    }
+
+    public void createaddress(def o){
+    	def address = [
+			objid         : 'TBA' + new java.rmi.server.UID(),
+			tagbalay_objid: o.objid,
+			type          : o.tagbalay.address.type,
+			addresstype   : o.tagbalay.address.type,
+			barangay_objid: o.tagbalay.address.barangay.objid,
+			barangay_name : o.tagbalay.address.barangay.name,
+			city          : o.tagbalay.address.barangay.city,
+			province      : o.tagbalay.address.barangay.province,
+			municipality  : o.tagbalay.address.barangay.municipality,
+			bldgno        : o.tagbalay.address?.bldgno, 
+			bldgname      : o.tagbalay.address?.bldgname, 
+			unitno        : o.tagbalay.address?.unitno,
+			street        : o.tagbalay.address?.street,
+			subdivision   : o.tagbalay.address?.subdivision,
+			pin           : o.tagbalay.address?.pin,
+    	]
+
+    	emaddress.create(address);
+
+    }
+
+   	public def createhin(def o) {
+		def appcode = "H"
+		// def yr      = dtSvc.serverYear;
+		// def mnth    = dtSvc.serverMonth;
+		// def smon    = ( mnth < 10 ) ? "0"+mnth : mnth+"";
+		def brgy    = o.tagbalay.address.barangay.objid
+		def prefix  = appcode+brgy+"-"+o.tileno.toString().padLeft(3, '0');
+		return prefix+"-"+seqSvc.getNextFormattedSeries(prefix);
+	}
+
+	public def createNewSurvey(def o) {
+		def initsurvey = [
+			objid          : 'SUR' + new java.rmi.server.UID(),
+			tagbalay_objid : o.objid,
+			state          : 'PROCESSING',
+			appno          : o.hin + '1C',
+			apptype        : 'NEW',
+			surveydate     : o.surveydate,
+			tagbalay       : o.tagbalay,
+			txndate        : dtSvc.serverDate,
+			txnmode        : 'ONLINE',
+			surveyor       : o.surveyor,
+			createdby_objid: env.USERID,
+			createdby_name : env.FULLNAME,
+			remarks        : o.remarks,
+			lft            : 1,
+			rgt            : 2,
+		]
+
+		emsurvey.create(initsurvey);
+		return initsurvey;
+	}
+
+
+	public void saveActiveTagbalayMember(def o) {
+		o.members.each{
+			def initmember = [
+				objid     : 'ATBM' + new java.rmi.server.UID(),
+				tagbalayid: o.objid,
+				memberid  : it.memberid,
+				name      : it.name,
+				relation  : it.relation,
+				birthdate : it.member.birthdate,
+				gender    : it.gender,
+				isdead    : it.isdead,
+				deathdate : it.deathdate,
+				ispregnant: it.ispregnant,
+			]
+			emam.create(initmember);
+		}
+		
+	}
+
+	public void saveSurveyTagbalayMember(def o) {
+		o.members.each{
+			def initmember = [
+				objid     :'STBM' + new java.rmi.server.UID(),
+				tagbalayid: o.objid,
+				surveyid  : o.currentsurvey.objid,
+				memberid  : it.memberid,
+				name      : it.name,
+				relation  : it.relation,
+				birthdate : it.member.birthdate,
+				gender    : it.gender,
+				isdead    : it.isdead,
+				deathdate : it.deathdate,
+				ispregnant: it.ispregnant,
+			]
+			emsm.create(initmember);
+		}
+	}
+
+	public void saveActiveinfo(o){
+    	if(!o.objid) throw new Exception("tagbalay id is required");
+
+		emainfo.removeActiveInfos([tagbalayid:o.objid]);
+		o.tagbalayinfos.each {
+			// println it
+			it.tagbalay_objid = o.objid;
+			it.type = 'activeinfo';
+			convertInfo(it);
+			emainfo.create( it );
+		}
+	
+    }
+
+    public void saveSurveyinfo(o){
+    	if(!o.objid) throw new Exception("tagbalay id is required");
+		
+		emsinfo.removeSurveyInfos([tagbalayid:o.objid,surveyid:o.currentsurvey.objid]);
+		o.tagbalayinfos.each {
+			it.tagbalay_objid = o.objid;
+			it.tagbalay_survey_objid = o.currentsurvey.objid;
+			it.type = 'surveyinfo';
+			convertInfo(it);
+			emsinfo.create( it );
+		}
+		
+    }
+
+
+
+    private void convertInfo(o) {
+		def value = o.value;
+		if( value == null ) return;
+		switch(o.attribute.datatype) {
+			case "decimal":
+				o.decimalvalue = Double.parseDouble(value+"");
+				break;
+			case "integer":
+				o.intvalue = Integer.parseInt(value+"");
+				break;
+			case "string_array":	
+			case "string":
+				o.stringvalue = (String)value;
+				break;
+			case "boolean":
+				value = ( value == 1 || value == true ) ? "true" : "false";
+				boolean b =  Boolean.parseBoolean(value);
+				o.boolvalue = (b) ? 1 : 0; 
+				break;
+		} 
+	}
+
+	public void createNewSurveyTask(def o) {
+		def initsurveytask = [
+			objid: 'ST' + new java.rmi.server.UID(), 
+			refid: o.currentsurvey.objid, 
+			state: 'INIT', 
+			startdate: dtSvc.serverDate, 
+			assignee_objid: env.USERID, 
+			assignee_name: env.FULLNAME, 
+			actor_objid: env.USERID, 
+			actor_name: env.FULLNAME, 
+			message: 'INITIALIZED SURVEY', 
+			lft: 1, 
+			rgt: 2, 
+		]
+		emstask.create(initsurveytask);
+	}
+ 
+}

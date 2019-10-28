@@ -10,7 +10,7 @@ public class AssertTagBalayInfo extends AbstractTagBalayInfoAction implements Ru
 
 	public void execute(def params, def drools) {
 		def member = params.member;
-		def couple = params.couple;
+		// def couple = params.couple;
 		def attrid = params.attribute.key;
 		def val = params.value;
 		def facts = request.facts;
@@ -23,7 +23,7 @@ public class AssertTagBalayInfo extends AbstractTagBalayInfoAction implements Ru
 			f.objid = info.objid;
 			f.name = info.attribute.name;
 			f.member = member;
-			f.couple = couple;
+			// f.couple = couple;
 			facts << f;
 		}
 	}

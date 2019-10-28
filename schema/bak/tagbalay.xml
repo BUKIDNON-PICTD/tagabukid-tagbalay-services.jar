@@ -1,0 +1,27 @@
+<schema adapter="tagabukid_tagbalay">
+
+	<element tablename="tagbalay">
+		<field name="objid" primary="true" prefix="HH"/>
+		<field name="state" required="true" caption=""/>
+		<field name="tagbalay_pangulo_name" required="true" caption=""/>
+		<field name="tagbalay_pangulo_objid" required="true" caption=""/>
+		<field name="tagbalay_address_text" required="true" caption=""/>
+		<field name="tagbalay_pangulo_address_text" required="true" caption=""/>
+		<field name="tagbalay_pangulo_address_objid" required="true" caption=""/>
+		<field name="hin" required="true" caption=""/>
+		<field name="tileno" required="true" caption=""/>
+		<field name="surveytype" required="true" caption=""/>
+		<field name="surveydate" required="true" caption=""/>
+		<field name="nextsurveydate" required="true" caption=""/>
+		<field name="recordlog_datecreated" required="true"/>
+		<field name="recordlog_createdbyuserid" required="true"/>
+		<field name="recordlog_createdbyuser" required="true"/>
+		<field name="recordlog_dateoflastupdate" required="true"/>
+		<field name="recordlog_lastupdatedbyuserid" required="true"/>
+		<field name="recordlog_lastupdatedbyuser" required="true"/>
+		<field name="mobileno" />
+		<field name="phoneno" />
+		<field name="email" />
+	</element>
+
+</schema>

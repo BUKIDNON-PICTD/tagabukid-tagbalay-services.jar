@@ -41,25 +41,25 @@ public class TagabukidTagBalayInfoRuleInterceptor {
 		o.infos?.removeAll( o.infos.findAll{it.phase==null || it.phase > 20} );	
 		
 		def memberMap = [:];
-		def coupleMap = [:];
+		// def coupleMap = [:];
 		def tagbalay = new TagBalay(o);
 		facts << tagbalay;
 		if( o.tagabalay?.address ) {
 			facts << new TagBalayLocation( o.tagbalay.address );
 		}	
-		if(o.couples!=null) {
-			o.couples?.each {
-				//we need to retrieve Member to be absolutely sure.
-				// def memberInfo = em.findMember( [objid: it.memberid ]);
-				def Couple = new Couple(it);
-				// Member.name = it.member.name;
-				// Member.name = memberInfo.name;
-				// Member.classification = memberInfo.classification?.objid;
-				// Member.attributes = "-" + em.getAttributes( [memberid: it.memberid ] )*.name.join("-") + "-";
-				facts << Couple;
-				coupleMap.put( it.coupleid, Couple );
-			}
-		}
+		// if(o.couples!=null) {
+		// 	o.couples?.each {
+		// 		//we need to retrieve Member to be absolutely sure.
+		// 		// def memberInfo = em.findMember( [objid: it.memberid ]);
+		// 		def Couple = new Couple(it);
+		// 		// Member.name = it.member.name;
+		// 		// Member.name = memberInfo.name;
+		// 		// Member.classification = memberInfo.classification?.objid;
+		// 		// Member.attributes = "-" + em.getAttributes( [memberid: it.memberid ] )*.name.join("-") + "-";
+		// 		facts << Couple;
+		// 		coupleMap.put( it.coupleid, Couple );
+		// 	}
+		// }
 
 		if(o.members!=null) {
 			o.members?.each {
@@ -83,7 +83,7 @@ public class TagabukidTagBalayInfoRuleInterceptor {
 				f.objid = it.objid;
 				f.name = it.attribute.name;
 				if(it.member) f.member = memberMap[ it.member.objid ];
-				if(it.couple) f.couple = coupleMap[ it.couple.objid ];
+				// if(it.couple) f.couple = coupleMap[ it.couple.objid ];
 				facts << f;
 			}
 		}

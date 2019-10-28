@@ -1,0 +1,21 @@
+<schema adapter="tagabukid_tagbalay">
+
+	<element tablename="tagbalay_active_address">
+		<field name="objid" primary="true" caption=""/>
+		<field name="parentid" required="true" caption=""/>
+		<field name="type" required="true" caption=""/>
+		<field name="barangay_objid" caption=""/>
+		<field name="barangay_name" required="true" caption=""/>
+		<field name="city" caption=""/>
+		<field name="province" caption=""/>
+		<field name="municipality" caption=""/>
+		<field name="bldgno" caption=""/>
+		<field name="bldgname" caption=""/>
+		<field name="unitno" caption=""/>
+		<field name="street" caption=""/>
+		<field name="subdivision" caption=""/>
+		<field name="pin" caption=""/>
+		<field name="text" caption="Address"/>
+	</element>
+
+</schema>

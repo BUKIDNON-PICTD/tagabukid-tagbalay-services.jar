@@ -9,6 +9,7 @@
 		<field name="surveydate" required="true" caption=""/>
 		<field name="tagbalay_pangulo_name" required="true" caption=""/>
 		<field name="tagbalay_pangulo_address_text" required="true" caption=""/>
+		<field name="tagbalay_pangulo_address_objid" required="true" caption=""/>
 		<field name="tagbalay_address_text" required="true" caption=""/>
 		<field name="txndate" required="true" caption=""/>
 		<field name="txnmode" required="true" caption=""/>

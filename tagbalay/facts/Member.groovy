@@ -15,6 +15,7 @@ public class Member {
     int age;	
     boolean isdead;	
     Date dateofdeath;	
+    boolean ispregnant;
     // String name;
     // String relation;
     // String classification;
@@ -33,6 +34,7 @@ public class Member {
         
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         this.isdead = o.isdead;
+        this.ispregnant = o.ispregnant;
         this.dateofdeath = (o.dateofdeath == null ? null : df.parse( o.dateofdeath ));
      
 

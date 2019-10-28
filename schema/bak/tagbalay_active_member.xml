@@ -1,0 +1,21 @@
+<schema adapter="tagabukid_tagbalay">
+
+	<element tablename="tagbalay_active_member">
+		<field name="objid" primary="true" caption=""/>
+		<field name="tagbalayid" required="true" caption=""/>
+		<field name="memberid" required="true" caption=""/>
+		<field name="name" required="true" caption=""/>
+		<field name="relation" required="true" caption=""/>
+		<field name="birthdate" caption=""/>
+		<field name="gender" caption=""/>
+		<field name="isdead" caption=""/>
+		<field name="deathdate" caption=""/>
+		<field name="ispregnant" caption=""/>
+	</element>
+
+</schema>
+
+
+
+
+

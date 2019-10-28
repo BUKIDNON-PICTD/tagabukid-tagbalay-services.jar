@@ -1,11 +1,44 @@
 <schema adapter="tagabukid_tagbalay">
 
 	<element tablename="tagbalay_active_member">
-		<field name="objid" primary="true" caption=""/>
-		<field name="tagbalay_objid" required="true" caption=""/>
-		<field name="tagbalay_member_objid" required="true" caption=""/>
-		<field name="tagbalay_member_name" required="true" caption=""/>
+		<field name="objid" primary="true" caption="" prefix="MEM"/>
+		<field name="parentid" required="true" caption=""/>
+		
+		<field name="member_objid" required="true" visible="false" caption="" searchable="true" />
+		<field name="member_name" required="true" visible="true" caption="Name" searchable="true" />
+		<field name="member_lastname" required="true" visible="true" caption="Last Name" searchable="true" />
+		<field name="member_firstname" required="true" visible="true" caption="First Name" searchable="true" />
+		<field name="member_middlename" required="true" visible="true" caption="Middle Name" searchable="true" />
+		<field name="member_birthdate" required="true" visible="false" caption="" searchable="true" />
+		<field name="member_birthplace" required="true" visible="false" caption="" searchable="true" />
+  		<field name="member_gender" required="true" visible="true" caption="Gender" searchable="true" />
+    	<field name="member_civilstatus" required="true" visible="false" caption="" searchable="true" />
+		<field name="member_citizenship" required="false" visible="false" caption="" searchable="true" />
+		<field name="member_phoneno" required="false" visible="false" caption="" searchable="true" />
+    	<field name="member_mobileno" required="false" visible="false" caption="" searchable="true" />
+    	<field name="member_email" required="false" visible="false" caption="" searchable="true" />
+		<field name="maidenname" required="false" visible="true" caption="Name" searchable="true" />
+		<field name="nameextension" required="false" visible="true" caption="Name Extension" searchable="true" />
+		<field name="prenametitle" required="false" visible="true" caption="Pre Name Title" searchable="true" />
+		<field name="postnametitle" required="false" visible="true" caption="Post Name Title" searchable="true" />
+		<field name="height" required="true" defaultValue="0" visible="false" caption="" searchable="true" />
+    	<field name="weight" required="true" defaultValue="0" visible="false" caption="" searchable="true" />
+    	<field name="bloodtype" required="false" defaultValue="" visible="false" caption="" searchable="true" />
+    	<field name="gsisid" required="false" visible="false" caption="" searchable="true" />
+    	<field name="pagibigid" required="false" visible="false" caption="" searchable="true" />
+    	<field name="philhealth" required="false" visible="false" caption="" searchable="true" />
+    	<field name="sss" required="false" visible="false" caption="" searchable="true" />
+    	<field name="tin" required="false" visible="false" caption="" searchable="true" />
 		<field name="relation" required="true" caption=""/>
+		<field name="isdead" caption=""/>
+		<field name="deathdate" caption=""/>
+		<field name="ispregnant" caption=""/>
+		<field name="isemergencycontact" caption=""/>
 	</element>
 
 </schema>
+
+
+
+
+

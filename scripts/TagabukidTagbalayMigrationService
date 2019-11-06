@@ -1,0 +1,229 @@
+import com.rameses.annotations.*
+import com.rameses.common.*
+import java.rmi.server.UID;
+import com.rameses.util.*;
+
+class TagabukidTagbalayMigrationService {
+	
+	@PersistenceContext('main')
+	def main
+
+	@PersistenceContext("tagabukid_tagbalay")
+	def em; 
+
+	@Service("PersistenceService")
+    def persistenceService;
+
+	@Service("TagabukidtagbalayService")
+	def tagbalaySvc;
+
+    @Service()
+	def self 
+
+	@ProxyMethod
+	public List getEntitiesForMigration(){
+		def households = em.sqlContext.createQuery('''
+			SELECT * FROM rawfinal WHERE objid NOT IN (SELECT objid from rawmigrated) AND type = 'HEAD'
+			LIMIT 25
+			''').resultList;
+		return households
+	}
+
+	@ProxyMethod
+    public def migrateTagbalay(params) {
+	
+	    def households = getEntitiesForMigration();
+    	// println 'Migrating ' + households.objid + '--' + households.lastname + ', ' + households.firstname
+
+        households.each{it->
+			println 'Migrating ' + it.objid + '--' + it.lastname + ', ' + it.firstname
+			// try{
+				self.migrateEntity(it);
+			// }catch(e){
+			// 	println e
+			// }
+        }
+        return households.size()
+    }  
+
+	@ProxyMethod
+	public void migrateEntity(entity){
+		def newentity = buildEntityIndividual(entity);
+		def newtagbalay = tagbalaySvc.initCreate();
+		newtagbalay.tagbalay = newentity;
+		newtagbalay.activeaddress[0] = newentity.address;
+		newtagbalay.tagbalay.birthdate = '0000-00-00';
+		newtagbalay.tagbalay.birthplace = '-';
+		newtagbalay.tagbalay.gender = '-';
+		newtagbalay.tagbalay.civilstatus = '-';
+		if(newtagbalay.tagbalay.middlename == ""){
+			newtagbalay.tagbalay.middlename = "-"
+		}
+		def headoffamily = [
+			objid   : 'MEM' + new UID(),
+			parentid: newtagbalay.objid,
+			height  : 0,
+			weight  : 0,
+			member  : newentity,
+		]
+		headoffamily.member.birthdate = '1990-01-01';
+		headoffamily.member.birthplace = '-';
+		headoffamily.member.gender = '-';
+		headoffamily.member.civilstatus = '-';
+		headoffamily.relation = 'PANUGLO';
+		if (headoffamily.member.middlename == ""){
+			headoffamily.member.middlename = "-"
+		}
+
+		newtagbalay.activemembers.add(headoffamily);
+
+		def members = em.sqlContext.createQuery('''
+			SELECT * FROM rawfinal WHERE objid NOT IN (SELECT objid from rawmigrated) AND type <> 'HEAD' AND groupid = $P{groupid}
+			''').setParameter('groupid', entity.groupid).resultList;
+		members.each{
+			def member = buildEntityIndividual(it);
+			def newmember = [
+				objid   : 'MEM' + new UID(),
+				parentid: newtagbalay.objid,
+				height  : 0,
+				weight  : 0,
+				member  : member,
+			]
+			newmember.member.birthdate = '1990-01-01';
+			newmember.member.birthplace = '-';
+			newmember.member.gender = '-';
+			newmember.member.civilstatus = '-';
+			newmember.relation = '-';
+			if (newmember.member.middlename == ""){
+				newmember.member.middlename = "-"
+			}
+
+			newtagbalay.activemembers.add(newmember);
+		}
+		newtagbalay.hin = tagbalaySvc.getHIN(newtagbalay);
+		newtagbalay._schemaname = 'tagbalay'
+        persistenceService.create(newtagbalay);
+
+		em.sqlContext.createExecutor('''
+			INSERT INTO rawmigrated (objid) VALUES ($P{objid})
+		''')
+		.setParameter('objid', entity.objid)
+		.execute()
+		println 'Migrated ' + entity.objid + '--' + entity.lastname + ', ' + entity.firstname
+	}
+
+	def buildEntityAddress(entity){
+		
+		def entityaddress = [
+			objid        	: 'A' + new UID(),
+			// parentid		: entity.objid,
+			type    		: 'nonlocal',
+			addresstype  	: null,
+			city  			: null,
+			municipality 	: null,
+			province 		: null,
+			bldgno			: null,
+			bldgname		: null,
+			unitno			: null,
+			street			: null,
+			subdivision		: null,
+			pin 			: null
+		]
+
+		def barangayinfo = main.sqlContext.createQuery('''
+		SELECT * FROM barangay WHERE objid = $P{objid}
+		''').setParameter('objid',entity.barangay.objid).singleResult;	
+
+		entityaddress.barangay = [
+			objid: barangayinfo.objid,
+			name : barangayinfo.name
+		]
+		def municipalityinfo = main.sqlContext.createQuery('''
+		SELECT * FROM municipality WHERE objid = $P{objid}
+		''').setParameter('objid',barangayinfo.parentid).singleResult;		
+
+		entityaddress.municipality = municipalityinfo.name
+
+		entityaddress.province = "PROVINCE OF BUKIDNON"	
+		entityaddress.type = 'local'
+		
+		return entityaddress
+	
+	}
+
+	 @ProxyMethod 
+	public def formatAddress( def x) {
+		// println objid
+		// def municipality = emmain.findMunicipality([objid:objid])
+        if (x.barangay){
+            x.barangay = persistenceService.read([ _schemaname: 'barangay', objid:x.barangay.objid])
+            x.barangay.parent = persistenceService.read([ _schemaname: 'municipality', objid:x.barangay.parentid])
+            def txt1 = [x.unitno, x.bldgno, x.bldgname].findAll{ (it? true: false) }.join(" ").trim(); 
+            def txt2 = [x.street, x.subdivision].findAll{ (it? true: false) }.join(" ").trim(); 
+            def txt3 = [x.barangay?.name, x?.city, x.barangay.parent.name, x.province].findAll{ (it? true: false) }.join(", ").trim(); 
+            return [txt1, txt2, txt3].findAll{ (it? true: false) }.join(', ').trim();
+        }
+        return x.text;
+
+	}
+
+	def buildEntityIndividual(entity){
+		def eaddress = buildEntityAddress(entity)
+    	eaddress.text = formatAddress(eaddress)
+		def entityindividual = [
+			objid  		: entity.objid,				
+			lastname 	: entity.lastname.toUpperCase(),
+			firstname 	: entity.firstname.toUpperCase(),
+			middlename 	: entity.middlename.toUpperCase(),
+			birthdate 	: '1990-01-01',
+			birthplace 	: null,
+			citizenship : 'FILIPINO',
+			gender 		: null,
+			civilstatus : null,
+			profession 	: null,
+			tin 		: null,
+			sss 		: null,
+			height 		: null,
+			weight 		: null,
+			acr 		: null,
+			religion 	: null,
+			photo 		: null,
+			thumbnail 	: null,
+			address     : eaddress,
+		]
+		// println entityindividual
+		entityindividual._schemaname = 'entityindividual';
+        persistenceService.create( entityindividual );
+
+       
+
+		return persistenceService.read([ _schemaname: 'entityindividual', objid: entityindividual.objid ]);
+	}
+
+	public static boolean containsWhiteSpace(final String testCode){
+	    if(testCode != null){
+	        for(int i = 0; i < testCode.length(); i++){
+	            if(Character.isWhitespace(testCode.charAt(i))){
+	                return true;
+	            }
+	        }
+	    }
+	    return false;
+	}
+
+	def isEntityMigrated(entityid){
+
+		return em22.sqlContext.createQuery('''
+			SELECT * FROM rawmigrated
+			WHERE objid = $P{objid}
+			''').setParameter('objid',entityid).singleResult;
+	}
+
+	def entityExist(entityid){
+
+		return em22.sqlContext.createQuery('''
+			SELECT * FROM entity WHERE objid = $P{objid}
+			''').setParameter('objid',entityid).singleResult;
+	}
+
+}

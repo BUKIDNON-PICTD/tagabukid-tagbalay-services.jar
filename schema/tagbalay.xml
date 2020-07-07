@@ -2,7 +2,7 @@
 	<element tablename="tagbalay">
 		<field name="objid" primary="true" prefix="CT" />
 		<field name="state" caption="State" visible="false" searchable="false"/>
-		<field name="hin" required="true" caption="Household Identification No." visible="true" searchable="true"/>
+		<field name="controlno" required="true" caption="Household Identification No." visible="true" searchable="true"/>
 		<field name="georefno" required="false" caption="Geographic Reference No." visible="true" searchable="true"/>
 		<field name="tagbalay_objid" required="true" visible="false" caption="" searchable="true" />
 		<field name="tagbalay_name" required="true" visible="true" caption="Name" searchable="true" />

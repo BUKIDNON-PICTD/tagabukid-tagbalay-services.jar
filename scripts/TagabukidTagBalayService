@@ -147,7 +147,7 @@ class TagabukidtagbalayService
 
 
     @ProxyMethod
-    public def getHIN(o){
+    public def getControlNo(o){
 		def appcode = "BUK"
 		// def yr      = dtSvc.serverYear;
 		// def mnth    = dtSvc.serverMonth;

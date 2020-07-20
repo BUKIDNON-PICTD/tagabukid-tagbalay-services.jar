@@ -15,6 +15,10 @@ class TagabukidtagbalayService
     @ActiveDB(value='beneficiary_profile')
 	def emmain;
 
+    
+    @ActiveDB(value='tagbalay', em='tagabukid_tagbalay')
+	def emtagbalay;
+
 	@Env
 	def env;
 
@@ -81,6 +85,14 @@ class TagabukidtagbalayService
         return entity;
     }
 
+    @ProxyMethod
+    def updateASMISstate(entity,reason){
+        if (entity.sate == 'NOTQUALIFIED'){
+            emtagbalay.setstatetoqualify(entity);
+        }else {
+           emtagbalay.setstatetoqualify(entity);
+        }
+    }
     @ProxyMethod
 	def createPDSfromEntity(){
         def p            = [_schemaname: 'entityindividual'];

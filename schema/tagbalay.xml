@@ -1,7 +1,7 @@
 <schema adapter="tagabukid_tagbalay">
 	<element tablename="tagbalay">
 		<field name="objid" primary="true" prefix="CT" />
-		<field name="state" caption="State" visible="false" searchable="false"/>
+		<field name="state" caption="State" visible="true" searchable="false"/>
 		<field name="controlno" required="true" caption="Household Identification No." visible="true" searchable="true"/>
 		<field name="georefno" required="false" caption="Geographic Reference No." visible="true" searchable="true"/>
 		<field name="tagbalay_objid" required="true" visible="false" caption="" searchable="true" />

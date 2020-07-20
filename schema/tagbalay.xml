@@ -51,7 +51,7 @@
 		<field name="recordlog_lastupdatedbyuser" visible="false"/>
 
 	
-	<complex name="activeaddress" ref="tagbalay_active_address" jointype="one-to-many" required="false">
+		<complex name="activeaddress" ref="tagbalay_active_address" jointype="one-to-many" required="false">
 			<key field="objid" target="parentid" /> 		
 		</complex>
 

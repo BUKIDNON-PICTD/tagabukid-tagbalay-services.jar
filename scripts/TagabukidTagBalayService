@@ -19,6 +19,9 @@ class TagabukidtagbalayService
     @ActiveDB(value='tagbalay', em='tagabukid_tagbalay')
 	def emtagbalay;
 
+    // @ActiveDB(value='tagbalay_verify', em='tagabukid_tagbalay')
+	// def emverify;
+
 	@Env
 	def env;
 
@@ -43,7 +46,7 @@ class TagabukidtagbalayService
 		
 		def entity                               = [:];
 		    entity.objid                         = 'CIT' + new java.rmi.server.UID() +"-"+ dtSvc.getServerYear() +"-N"
-		    entity.state                         = "DRAFT"
+		    entity.state                         = "NOTQUALIFIED"
 		    entity.height                        = 0
 		    entity.weight                        = 0
 		    entity.recordlog                     = [:]
@@ -59,8 +62,12 @@ class TagabukidtagbalayService
 		    entity.activeassistances             = []
 		    entity.surveys                       = []
 		    entity.asmisinfos                    = []
-        return entity;
+            entity.verify                        = []
+            
+            println entity.verify[0]
 
+        return entity;
+            
 	}
 
     @ProxyMethod
@@ -85,14 +92,16 @@ class TagabukidtagbalayService
         return entity;
     }
 
+ 
     @ProxyMethod
     def updateASMISstate(entity,reason){
-        if (entity.sate == 'NOTQUALIFIED'){
+        if (entity.state == 'NOTQUALIFIED'){
             emtagbalay.setstatetoqualify(entity);
         }else {
-           emtagbalay.setstatetoqualify(entity);
+            emtagbalay.setstatetonotqualify(entity);
         }
     }
+
     @ProxyMethod
 	def createPDSfromEntity(){
         def p            = [_schemaname: 'entityindividual'];

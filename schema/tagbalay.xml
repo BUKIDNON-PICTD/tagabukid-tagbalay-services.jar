@@ -59,6 +59,10 @@
 			<key field="objid" target="parentid" /> 		
 		</complex> 
 
+		<complex name="verify" ref="tagbalay_verify" jointype="one-to-many" required="false">
+			<key field="objid" target="parentid" /> 		
+		</complex> 
+
 
 		<!-- <complex name="activeassistances" ref="asmis_tagbalay_active_assistance" jointype="one-to-many" required="false">
 			<key field="objid" target="tagbalay_objid" /> 		

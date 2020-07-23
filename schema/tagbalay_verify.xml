@@ -1,0 +1,17 @@
+<schema adapter="tagabukid_tagbalay">
+
+	<element tablename="tagbalay_verify">
+		<field name="objid" primary="true" caption=""/>
+		<field name="parentid" required="true" caption=""/>
+		<field name="date" required="true" caption=""/>
+		<field name="state" required="true" caption=""/>
+		<field name="remarks" required="true" caption=""/>
+		<field name="recordlog_datecreated" required="true" visible="false"/>
+		<field name="recordlog_createdbyuserid" required="true" visible="false"/>
+		<field name="recordlog_createdbyuser" required="true" visible="false"/>
+		<field name="recordlog_dateoflastupdate" visible="false"/>
+		<field name="recordlog_lastupdatedbyuserid" visible="false"/>
+		<field name="recordlog_lastupdatedbyuser" visible="false"/>
+	</element>
+
+</schema>

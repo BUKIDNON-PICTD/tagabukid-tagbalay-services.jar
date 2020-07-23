@@ -1,0 +1,129 @@
+import com.rameses.annotations.*
+import com.rameses.common.*;
+import com.rameses.services.extended.*;
+
+class TagabukidTagbalayListReportService
+{
+    @ActiveDB(value='testmaguumareports', em='testpagri')
+    def em
+
+    // @ActiveDB(value='testmaguumareports', em='main')
+    // def emmain
+
+    @Service('NumberService')
+    def numberSvc
+
+    @Env 
+    def env 
+        
+    @ProxyMethod
+    public def getFarmersListByFacility(params) {
+
+        params.lguid = (params.lgu ? params.lgu.objid :'%')
+        params.barangayid = (params.barangay ? params.barangay.objid : '%')
+        params.phfid = (params.phf ? params.phf.objid : '%')
+        
+        
+
+        def list = em.getFarmersListByFacility(params)
+        if (!list) throw new Exception('There are no records found.')
+      
+        def p = [
+            TITLE    : 'List of Farmers by Post Harvest Facility',
+            //SUBTITLE : subtitle, 
+            MUN : (params.lgu ?  params.lgu.name : "ALL"),
+            BRGY : (params.barangay ?  params.barangay.name : "ALL"),
+            PHF :(params.phf ?  params.phf.name : "ALL"),
+            
+        ]
+
+        return [
+            parameters  : p,
+            reportdata  : list
+        ]
+    }
+
+    @ProxyMethod
+    public def getTagbalayList(params) {
+
+        params.lguid = (params.lgu ? params.lgu.objid :'%')
+        params.barangayid = (params.barangay ? params.barangay.objid : '%')
+        params.phfid = (params.phf ? params.phf.objid : '%')
+       
+        
+        def list = em.getTagbalayList(params)
+        if (!list) throw new Exception('There are no records found.')
+
+        
+        def p = [
+            TITLE    : 'Post Harvest Facility Summary',
+            //SUBTITLE : subtitle, 
+            MUN : (params.lgu ?  params.lgu.name : "ALL"),
+            BRGY : (params.barangay ?  params.barangay.name : "ALL"),
+            PHF :(params.phf ?  params.phf.name : "ALL"),
+        ]
+        return [
+            parameters  : p,
+            reportdata  : list
+        ]
+    }
+
+
+
+     @ProxyMethod
+    public def getFacilitySummary(params) {
+        def orgclass = env.ORGCLASS
+        def orgid = env.ORGID
+
+        if ('PROVINCE'.equalsIgnoreCase(orgclass)) {
+            params.org = 'PROVINCE';
+        }
+
+
+
+        params.lguid = (params.lgu ? params.lgu.objid :'%')
+        params.barangayid = (params.barangay ? params.barangay.objid : '%')
+
+        def list = em.getFacilitySummary(params)
+        if (!list) throw new Exception('There are no records found.')
+
+        def p = [
+            TITLE    : 'Municipality Post Harvest Facility Summary',
+            //SUBTITLE : subtitle, 
+            MUN : (params.lgu ?  params.lgu.name : "ALL"),
+            BRGY : (params.barangay ?  params.barangay.name : "ALL"),
+            ORG : (params.org == 'PROVINCE' ?  params.org : "BARANGAY"),
+        ]
+
+        return [
+            parameters  : p,
+            reportdata  : list
+        ]
+    }
+
+    // @ProxyMethod
+    // public def getTagbalay() {
+    //     return em.getTagbalay();
+    // }
+
+    // @ProxyMethod
+    // public def getCommodity() {
+    //     return em.getTagbalay();
+    // }
+
+    // @ProxyMethod
+    // public def getCommodityType(objid) {
+    //     return em.getCommodityType([objid:objid]);
+    // }
+
+    // @ProxyMethod
+    // public def getCommoditySubType(objid) {
+    //     return em.getCommoditySubType([objid:objid]);
+    // }
+
+    // @ProxyMethod
+    // public def getTenurialstatus() {
+    //     return em.getTenurialstatus();
+    // }
+
+}

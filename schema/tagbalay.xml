@@ -8,7 +8,7 @@
 		<field name="tagbalay_name" required="true" visible="true" caption="Name" searchable="true" />
 		<field name="tagbalay_lastname" required="true" visible="true" caption="Last Name" searchable="true" />
 		<field name="tagbalay_firstname" required="true" visible="true" caption="First Name" searchable="true" />
-		<field name="tagbalay_middlename" required="true" visible="true" caption="Middle Name" searchable="true" />
+		<field name="tagbalay_middlename" required="false" visible="true" caption="Middle Name" searchable="true" />
 		<field name="tagbalay_birthdate" required="true" visible="true" caption="Birth Date" searchable="true" />
 		<field name="tagbalay_birthplace" required="true" visible="false" caption="" searchable="true" />
   		<field name="tagbalay_gender" required="true" visible="true" caption="Gender" searchable="true" />

@@ -17,15 +17,15 @@ class TagabukidTagbalayListReportService
     def env 
         
     @ProxyMethod
-    public def getFarmersListByFacility(params) {
+    public def getTagbalayList(params) {
 
-        params.lguid = (params.lgu ? params.lgu.objid :'%')
-        params.barangayid = (params.barangay ? params.barangay.objid : '%')
-        params.phfid = (params.phf ? params.phf.objid : '%')
+        params.lgu = (params.lgu ? params.lgu.municipality :'%')
+        params.barangay = (params.barangay ? params.barangay.barangay.name : '%')
+        params.state = (params.state ? params.state.state : '%')
         
         
 
-        def list = em.getFarmersListByFacility(params)
+        def list = em.getTagbalayList(params)
         if (!list) throw new Exception('There are no records found.')
       
         def p = [
@@ -33,7 +33,7 @@ class TagabukidTagbalayListReportService
             //SUBTITLE : subtitle, 
             MUN : (params.lgu ?  params.lgu.name : "ALL"),
             BRGY : (params.barangay ?  params.barangay.name : "ALL"),
-            PHF :(params.phf ?  params.phf.name : "ALL"),
+            STATE :(params.state ?  params.state.name : "ALL"),
             
         ]
 
@@ -44,14 +44,14 @@ class TagabukidTagbalayListReportService
     }
 
     @ProxyMethod
-    public def getTagbalayList(params) {
+    public def getFacilityList(params) {
 
         params.lguid = (params.lgu ? params.lgu.objid :'%')
         params.barangayid = (params.barangay ? params.barangay.objid : '%')
-        params.phfid = (params.phf ? params.phf.objid : '%')
+        params.stateid = (params.state ? params.state.objid : '%')
        
         
-        def list = em.getTagbalayList(params)
+        def list = em.getFacilityList(params)
         if (!list) throw new Exception('There are no records found.')
 
         
@@ -60,7 +60,7 @@ class TagabukidTagbalayListReportService
             //SUBTITLE : subtitle, 
             MUN : (params.lgu ?  params.lgu.name : "ALL"),
             BRGY : (params.barangay ?  params.barangay.name : "ALL"),
-            PHF :(params.phf ?  params.phf.name : "ALL"),
+            STATE :(params.state ?  params.state.name : "ALL"),
         ]
         return [
             parameters  : p,
@@ -68,6 +68,33 @@ class TagabukidTagbalayListReportService
         ]
     }
 
+
+    // @ProxyMethod
+    // public def getFarmersList(params) {
+
+    //     params.lguid = (params.lgu ? params.lgu.objid :'%')
+    //     params.barangayid = (params.barangay ? params.barangay.objid : '%')
+
+    //     def list = em.getFarmersList(params)
+    //     if (!list) throw new Exception('There are no records found.')
+
+
+    //     list.each{
+    //         it.entity = emmain.findEntity([objid:it.farmerobjid]);
+    //     }
+      
+    //     def p = [
+    //         TITLE    : 'Masterlist of Farmers',
+    //         //SUBTITLE : subtitle, 
+    //         MUN : (params.lgu ?  params.lgu.name : "ALL"),
+    //         BRGY : (params.barangay ?  params.barangay.name : "ALL"),
+    //     ]
+
+    //     return [
+    //         parameters  : p,
+    //         reportdata  : list
+    //     ]
+    // }
 
 
      @ProxyMethod
@@ -101,14 +128,14 @@ class TagabukidTagbalayListReportService
         ]
     }
 
-    // @ProxyMethod
-    // public def getTagbalay() {
-    //     return em.getTagbalay();
-    // }
+    @ProxyMethod
+    public def getState() {
+        return em.getState();
+    }
 
     // @ProxyMethod
     // public def getCommodity() {
-    //     return em.getTagbalay();
+    //     return em.getFacility();
     // }
 
     // @ProxyMethod
